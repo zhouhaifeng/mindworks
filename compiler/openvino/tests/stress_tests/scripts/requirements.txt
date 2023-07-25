@@ -1,9 +1,0 @@
--c ../../constraints.txt
-pymongo
-Jinja2
-PyYAML
-fastjsonschema
-pandas
-h5py
-scipy
-defusedxml

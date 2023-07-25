@@ -1,7 +1,0 @@
--c ../constraints.txt
-numpy
-pytest
-pytest-dependency
-pytest-html
-py
-PyYAML

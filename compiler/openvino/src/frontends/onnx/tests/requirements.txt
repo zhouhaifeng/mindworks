@@ -1,5 +1,0 @@
-# ONNX - generate test models
--c ../../../bindings/python/constraints.txt
-protobuf
-docopt
-onnx
