@@ -10,7 +10,7 @@ import torch
 import os
 import time
 from multiprocessing import Pool, Barrier
-from test_ds_iouring_utils import report_results, task_log, task_barrier
+from test_ds_rdma_utils import report_results, task_log, task_barrier
 from deepspeed.accelerator import get_accelerator
 from deepspeed.ops.op_builder import AsyncIOBuilder
 
@@ -21,9 +21,9 @@ def pre_handle(args, tid, read_op):
     file = args.read_file if read_op else f'{args.write_file}.{tid}'
 
     io_parallel = args.io_parallel if args.io_parallel else 1
-    handle = AsyncIOBuilder().load().aio_handle(args.block_size, args.queue_depth, args.single_submit,
+    handle = RDMABuilder().load().rdma_handle(args.block_size, args.queue_depth, args.single_submit,
                                                 args.overlap_events, io_parallel)
-    task_log(tid, f'Created deepspeed aio handle')
+    task_log(tid, f'Created deepspeed iouring handle')
 
     if args.gpu:
         buffer = torch.empty(num_bytes, dtype=torch.uint8, device=get_accelerator().device_name())
@@ -151,27 +151,27 @@ def _aio_handle_tasklet(pool_params):
         task_log(tid, f'running main task {i}')
         start_time = time.time()
         ctxt = schedule["main"]((args, tid, ctxt))
-        task_barrier(aio_barrier, args.threads)
+        task_barrier(iouring_barrier, args.threads)
         stop_time = time.time()
         ctxt["main_task_sec"] += stop_time - start_time
 
     # Run post task
     task_log(tid, f'running post-task')
     ctxt = schedule["post"]((args, tid, ctxt))
-    task_barrier(aio_barrier, args.threads)
+    task_barrier(iouring_barrier, args.threads)
 
     return ctxt["main_task_sec"], ctxt["elapsed_sec"], ctxt["num_bytes"] * args.loops
 
 
 def _init_tasklet(b):
-    global aio_barrier
-    aio_barrier = b
+    global iouring_barrier
+    iouring_barrier = b
 
 
 def aio_handle_multiprocessing(args, read_op):
     b = Barrier(args.threads)
     pool_params = [(args, p, read_op) for p in range(args.threads)]
     with Pool(processes=args.threads, initializer=_init_tasklet, initargs=(b, )) as p:
-        pool_results = p.map(_aio_handle_tasklet, pool_params)
+        pool_results = p.map(_rdma_handle_tasklet, pool_params)
 
     report_results(args, read_op, pool_results)

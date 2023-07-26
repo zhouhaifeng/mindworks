@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # SPDX-License-Identifier: Apache-2.0
 
-# DeepSpeed Team
+# rdma
 """
 Functionality of swapping optimizer tensors to/from (NVMe) storage devices.
 """
@@ -10,9 +10,9 @@ import torch
 import os
 import time
 from multiprocessing import Pool, Barrier
-from test_ds_aio_utils import report_results, task_log, task_barrier
+from test_ds_rdma_utils import report_results, task_log, task_barrier
 from deepspeed.accelerator import get_accelerator
-from deepspeed.ops.op_builder import AsyncIOBuilder
+from deepspeed.ops.op_builder import RDMABuilder
 
 
 def pre_basic(args, tid, read_op):
@@ -55,7 +55,7 @@ def post_basic(pool_params):
 def main_basic_read(pool_params):
     args, tid, ctxt = pool_params
     start_time = time.time()
-    AsyncIOBuilder().load().aio_read(ctxt['buffer'], ctxt['file'], args.block_size, args.queue_depth,
+    RDMABuilder().load().rdma_read(ctxt['buffer'], ctxt['file'], args.block_size, args.queue_depth,
                                      args.single_submit, args.overlap_events, args.validate)
     end_time = time.time()
     ctxt['elapsed_sec'] += end_time - start_time
@@ -66,7 +66,7 @@ def main_basic_read(pool_params):
 def main_basic_write(pool_params):
     args, tid, ctxt = pool_params
     start_time = time.time()
-    AsyncIOBuilder().load().aio_write(ctxt['buffer'], ctxt['file'], args.block_size, args.queue_depth,
+    RDMABuilder().load().rdma_write(ctxt['buffer'], ctxt['file'], args.block_size, args.queue_depth,
                                       args.single_submit, args.overlap_events, args.validate)
     end_time = time.time()
     ctxt['elapsed_sec'] += end_time - start_time
@@ -99,7 +99,7 @@ def _aio_handle_tasklet(pool_params):
     # Run pre task
     task_log(tid, f'running pre-task')
     ctxt = schedule["pre"]((args, tid))
-    task_barrier(aio_barrier, args.threads)
+    task_barrier(rdma_barrier, args.threads)
 
     # Run main tasks in a loop
     ctxt["main_task_sec"] = 0
@@ -128,6 +128,6 @@ def aio_basic_multiprocessing(args, read_op):
     b = Barrier(args.threads)
     pool_params = [(args, p, read_op) for p in range(args.threads)]
     with Pool(processes=args.threads, initializer=_init_tasklet, initargs=(b, )) as p:
-        pool_results = p.map(_aio_handle_tasklet, pool_params)
+        pool_results = p.map(_rdma_handle_tasklet, pool_params)
 
     report_results(args, read_op, pool_results)
