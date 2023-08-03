@@ -9,7 +9,7 @@ import subprocess
 from .builder import OpBuilder
 
 
-class AsyncIOBuilder(OpBuilder):
+class IOUringBuilder(OpBuilder):
     BUILD_VAR = "DS_BUILD_AIO"
     NAME = "async_io"
 
@@ -17,7 +17,7 @@ class AsyncIOBuilder(OpBuilder):
         super().__init__(name=self.NAME)
 
     def absolute_name(self):
-        return f'deepspeed.ops.aio.{self.NAME}_op'
+        return f'deepspeed.ops.iouring.{self.NAME}_op'
 
     def sources(self):
         return [

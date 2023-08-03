@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # SPDX-License-Identifier: Apache-2.0
 
-# DeepSpeed Team
+# zhouhaifeng
 """
 Functionality of swapping optimizer tensors to/from (NVMe) storage devices.
 """
@@ -9,8 +9,8 @@ Functionality of swapping optimizer tensors to/from (NVMe) storage devices.
 import os
 import argparse
 import multiprocessing as mp
-from ds_aio_basic import aio_basic_multiprocessing
-from ds_aio_handle import aio_handle_multiprocessing
+from ds_iouring_basic import iouring_basic_multiprocessing
+from ds_iouring_handle import iouring_handle_multiprocessing
 from test_ds_aio_utils import refine_args
 
 
@@ -39,7 +39,7 @@ def parse_arguments():
 
     parser.add_argument('--validate', action='store_true', help='Perform validation in library.')
 
-    parser.add_argument('--handle', action='store_true', help='Use AIO handle.')
+    parser.add_argument('--handle', action='store_true', help='Use IOUring handle.')
 
     parser.add_argument('--loops', type=int, default=1, help='Count of operation repetitions')
 
@@ -65,7 +65,7 @@ def validate_args(args):
 
 
 def main():
-    print(f'Testing deepspeed_aio python frontend')
+    print(f'Testing deepspeed_iouring python frontend')
 
     args = parse_arguments()
     refine_args(args)
@@ -73,7 +73,7 @@ def main():
         quit()
 
     mp.set_start_method('spawn')
-    multiprocess_function = aio_handle_multiprocessing if args.handle else aio_basic_multiprocessing
+    multiprocess_function = iouring_handle_multiprocessing if args.handle else iouring_basic_multiprocessing
     if args.read_file:
         multiprocess_function(args, True)
 

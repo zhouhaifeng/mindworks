@@ -10,9 +10,9 @@ import torch
 import os
 import time
 from multiprocessing import Pool, Barrier
-from test_ds_aio_utils import report_results, task_log, task_barrier
+from test_ds_iouring_utils import report_results, task_log, task_barrier
 from deepspeed.accelerator import get_accelerator
-from deepspeed.ops.op_builder import AsyncIOBuilder
+from deepspeed.ops.op_builder import IOUringBuilder
 
 
 def pre_basic(args, tid, read_op):

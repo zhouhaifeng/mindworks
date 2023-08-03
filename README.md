@@ -27,3 +27,4 @@ compiler/llvm
 
 ref:
 [openai api](https://juejin.cn/post/7225126264663605309)
+[State of GPT: A Programmer's Perspective](https://mp.weixin.qq.com/s?__biz=MzI4MjkzMDIwMg==&mid=2247483746&idx=1&sn=c5c577aad0bcfd0e339669d30e9a4fdc&scene=21#wechat_redirect)

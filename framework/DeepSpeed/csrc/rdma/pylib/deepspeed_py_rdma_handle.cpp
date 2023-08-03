@@ -10,7 +10,9 @@ Licensed under the MIT license.
 Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 */
 
-#include "deepspeed_py_aio_handle.h"
+//zhouhaifeng 2023
+
+#include "deepspeed_py_rdma_handle.h"
 
 using namespace std;
 
