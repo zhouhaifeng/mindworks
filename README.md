@@ -28,3 +28,7 @@ compiler/llvm
 ref:
 [openai api](https://juejin.cn/post/7225126264663605309)
 [State of GPT: A Programmer's Perspective](https://mp.weixin.qq.com/s?__biz=MzI4MjkzMDIwMg==&mid=2247483746&idx=1&sn=c5c577aad0bcfd0e339669d30e9a4fdc&scene=21#wechat_redirect)
+[LLVM IR](https://llvm.org/docs/LangRef.html)
+[TVM](https://daobook.github.io/tvm/)
+[TVM IR](https://tvm.apache.org/docs/reference/api/python/ir.html)
+[openvino](https://docs.openvino.ai/2023.0/documentation.html)
