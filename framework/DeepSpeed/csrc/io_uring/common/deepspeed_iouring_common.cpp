@@ -40,11 +40,11 @@ using namespace std::chrono;
 
 static const std::string c_library_name = "deepspeed_aio";
 
-static void _report_aio_statistics(const char* tag,
+static void _report_iouring_statistics(const char* tag,
                                    const std::vector<std::chrono::duration<double>>& latencies)
     __attribute__((unused));
 
-static void _report_aio_statistics(const char* tag,
+static void _report_iouring_statistics(const char* tag,
                                    const std::vector<std::chrono::duration<double>>& latencies)
 {
     std::vector<double> lat_usec;
@@ -57,8 +57,8 @@ static void _report_aio_statistics(const char* tag,
               << " min/max/avg = " << min_lat << " " << max_lat << " " << avg_lat << std::endl;
 }
 
-static void _get_aio_latencies(std::vector<std::chrono::duration<double>>& raw_latencies,
-                               struct deepspeed_aio_latency_t& summary_latencies)
+static void _get_iouring_latencies(std::vector<std::chrono::duration<double>>& raw_latencies,
+                               struct deepspeed_iouring_latency_t& summary_latencies)
 {
     std::vector<double> lat_usec;
     for (auto& lat : raw_latencies) { lat_usec.push_back(lat.count() * 1e6); }
