@@ -1,0 +1,35 @@
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - 21000:9000
+    command: server /data  #指定容器中的目录 /data
+    environment:
+      MINIO_ACCESS_KEY: minio    #管理后台用户名
+      MINIO_SECRET_KEY: minioxxx #管理后台密码，最小8个字符
+    volumes:
+      - ./data:/data              #映射当前目录下的data目录至容器内/data目录
+      - ./config:/root/.minio/     #映射配置目录
+
+  jobmanager:
+    image: flink:latest
+    container_name: jobmanager
+    command: jobmanager
+    privileged: true
+    ports:
+      - "8081:8081"
+      - "6123:6123"
+      - "6122:6122"
+    environment:
+      - TZ=Asia/Shanghai
+      - ENABLE_BUILT_IN_PLUGINS=flink-s3-fs-hadoop-1.16.0.jar
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mnt/jobmanager/conf/flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
+      - /mnt/jobmanager/log:/opt/flink/log:rw
+      - /mnt/jobmanager/usrlib:/opt/flink/lib/usrlib:rw
+      - /mnt/jobmanager/plugins:/opt/flink/plugins:rw
+      - /mnt/jobmanager/user-upload-temp:/opt/flink/user-upload-temp:rw
