@@ -1,0 +1,63 @@
+add_mlir_conversion_library(TritonGPUToLLVM
+    ConvertLayoutOpToLLVM/SharedToDotOperandFMA.cpp
+    ConvertLayoutOpToLLVM/SharedToDotOperandMMAv1.cpp
+    ConvertLayoutOpToLLVM/SharedToDotOperandMMAv2.cpp
+    ConvertLayoutOpToLLVM.cpp
+    DotOpToLLVM/FMA.cpp
+    DotOpToLLVM/MMAv1.cpp
+    DotOpToLLVM/MMAv2.cpp
+    DotOpToLLVM/WGMMA.cpp
+    DotOpToLLVM.cpp
+    ElementwiseOpToLLVM.cpp
+    LoadStoreOpToLLVM.cpp
+    BarrierOpToLLVM.cpp
+    TritonGPUToLLVM.cpp
+    GCNAsmFormat.cpp
+    PTXAsmFormat.cpp
+    ConvertLayoutOpToLLVM/SharedToDotOperandFMA.cpp
+    ConvertLayoutOpToLLVM/SharedToDotOperandMMAv1.cpp
+    ConvertLayoutOpToLLVM/SharedToDotOperandMMAv2.cpp
+    ConvertLayoutOpToLLVM.cpp
+    DotOpToLLVM/FMA.cpp
+    DotOpToLLVM/MMAv1.cpp
+    DotOpToLLVM/MMAv2.cpp
+    DotOpToLLVM.cpp
+    ElementwiseOpToLLVM.cpp
+    LoadStoreOpToLLVM.cpp
+    TritonGPUToLLVM.cpp
+    TritonGPUToLLVMPass.cpp
+    GCNAsmFormat.cpp
+    PTXAsmFormat.cpp
+    ReduceOpToLLVM.cpp
+    ScanOpToLLVM.cpp
+    TypeConverter.cpp
+    Utility.cpp
+    ViewOpToLLVM.cpp
+    TensorPtrOpsToLLVM.cpp
+    ClusterOpsToLLVM.cpp
+    RegReallocOpToLLVM.cpp
+
+    ADDITIONAL_HEADER_DIRS
+    ${PROJECT_SOURCE_DIR}/include/triton/Conversion/TritonGPUToLLVM
+    ${PROJECT_BINARY_DIR}/include/triton/Conversion/TritonGPUToLLVM
+
+    DEPENDS
+    TritonGPUConversionPassIncGen
+
+    LINK_COMPONENTS
+    Core
+
+    LINK_LIBS PUBLIC
+    MLIRIR
+    MLIRPass
+    MLIRGPUOps
+    MLIRGPUToNVVMTransforms
+    MLIRGPUToROCDLTransforms
+    MLIRGPUTransforms
+    TritonAnalysis
+    TritonIR
+    TritonGPUIR
+    TritonGPUTransforms
+    TritonNvidiaGPUTransforms
+    NVGPUIR
+)
