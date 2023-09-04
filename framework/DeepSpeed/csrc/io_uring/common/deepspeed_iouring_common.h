@@ -14,17 +14,17 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 
 using namespace std;
 
-void do_aio_operation_sequential(const bool read_op,
+void do_iouring_operation_sequential(const bool read_op,
                                  std::unique_ptr<aio_context>& aio_ctxt,
                                  std::unique_ptr<io_xfer_ctxt>& xfer_ctxt,
-                                 deepspeed_aio_config_t* config,
-                                 deepspeed_aio_perf_t* perf);
+                                 deepspeed_iouring_config_t* config,
+                                 deepspeed_iouring_perf_t* perf);
 
-void do_aio_operation_overlap(const bool read_op,
-                              std::unique_ptr<aio_context>& aio_ctxt,
+void do_iouring_operation_overlap(const bool read_op,
+                              std::unique_ptr<iouring_context>& aio_ctxt,
                               std::unique_ptr<io_xfer_ctxt>& xfer_ctxt,
-                              deepspeed_aio_config_t* config,
-                              deepspeed_aio_perf_t* perf);
+                              deepspeed_iouring_config_t* config,
+                              deepspeed_iouring_perf_t* perf);
 
 int open_file(const char* filename, const bool read_op);
 

@@ -16,7 +16,7 @@ using namespace std;
 const int c_block_size = 128 * 1024;
 const int c_io_queue_depth = 8;
 
-deepspeed_aio_config_t::deepspeed_aio_config_t()
+deepspeed_iouring_config_t::deepspeed_iouring_config_t()
     : _block_size(c_block_size),
       _queue_depth(c_io_queue_depth),
       _single_submit(false),
@@ -25,7 +25,7 @@ deepspeed_aio_config_t::deepspeed_aio_config_t()
 {
 }
 
-deepspeed_aio_config_t::deepspeed_aio_config_t(const int block_size,
+deepspeed_iouring_config_t::deepspeed_iouring_config_t(const int block_size,
                                                const int queue_depth,
                                                const bool single_submit,
                                                const bool overlap_events,
@@ -43,14 +43,14 @@ void deepspeed_aio_latency_t::dump(const std::string tag)
     std::cout << tag << _min_usec << " " << _max_usec << " " << _avg_usec << " " << std::endl;
 }
 
-void deepspeed_aio_latency_t::accumulate(const struct deepspeed_aio_latency_t& other)
+void deepspeed_iouring_latency_t::accumulate(const struct deepspeed_iouring_latency_t& other)
 {
     _min_usec += other._min_usec;
     _max_usec += other._max_usec;
     _avg_usec += other._avg_usec;
 }
 
-void deepspeed_aio_latency_t::scale(const float scaler)
+void deepspeed_iouring_latency_t::scale(const float scaler)
 {
     _min_usec *= scaler;
     _max_usec *= scaler;

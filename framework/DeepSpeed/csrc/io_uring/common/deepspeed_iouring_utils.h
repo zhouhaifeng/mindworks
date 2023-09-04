@@ -20,7 +20,7 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <deepspeed_aio_types.h>
+#include <deepspeed_iouring_types.h>
 #include <cstring>
 #include <fstream>
 #include <iostream>

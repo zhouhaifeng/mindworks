@@ -10,7 +10,7 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #include <cmath>
 #include <iostream>
 
-#include "deepspeed_aio_utils.h"
+#include "deepspeed_iouring_utils.h"
 
 using namespace std;
 
