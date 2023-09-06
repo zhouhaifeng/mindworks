@@ -33,7 +33,7 @@ ref:
 
 apps
 [search](https://hub.baai.ac.cn/view/23202)
-
+[llama2]()
 平台
 [nvidia ai enterprise](https://docs.nvidia.com/ai-enterprise/1.1/user-guide/index.html)
 
