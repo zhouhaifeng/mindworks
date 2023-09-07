@@ -38,7 +38,7 @@ deepspeed_iouring_config_t::deepspeed_iouring_config_t(const int block_size,
 {
 }
 
-void deepspeed_aio_latency_t::dump(const std::string tag)
+void deepspeed_iouring_latency_t::dump(const std::string tag)
 {
     std::cout << tag << _min_usec << " " << _max_usec << " " << _avg_usec << " " << std::endl;
 }
@@ -57,7 +57,7 @@ void deepspeed_iouring_latency_t::scale(const float scaler)
     _avg_usec *= scaler;
 }
 
-aio_context::aio_context(const int block_size, const int queue_depth)
+iouring_context::iouring_context(const int block_size, const int queue_depth)
 {
     _block_size = block_size;
     _queue_depth = queue_depth;
@@ -68,7 +68,7 @@ aio_context::aio_context(const int block_size, const int queue_depth)
     io_queue_init(queue_depth, &_io_ctxt);
 }
 
-aio_context::~iouring_context()
+iouring_context::~iouring_context()
 {
     for (auto& iocb : _iocbs) { free(iocb); }
     _io_events.resize(0);

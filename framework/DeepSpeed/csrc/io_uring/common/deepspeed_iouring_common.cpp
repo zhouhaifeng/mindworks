@@ -12,7 +12,7 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #include <string.h>
 
 #include <fcntl.h>
-#include <libaio.h>
+#include <liburing.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -35,8 +35,8 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 using namespace std;
 using namespace std::chrono;
 
-#define DEBUG_DS_AIO_PERF 0
-#define DEBUG_DS_AIO_SUBMIT_PERF 0
+#define DEBUG_DS_IOURING_PERF 0
+#define DEBUG_DS_IOURING_SUBMIT_PERF 0
 
 static const std::string c_library_name = "deepspeed_iouring";
 
@@ -77,13 +77,13 @@ static void _do_io_submit_singles(const long long int n_iocbs,
         const auto st = std::chrono::high_resolution_clock::now();
         const auto submit_ret = io_submit(iouring_ctxt->_io_ctxt, 1, iouring_ctxt->_iocbs.data() + i);
         submit_times.push_back(std::chrono::high_resolution_clock::now() - st);
-#if DEBUG_DS_AIO_SUBMIT_PERF
+#if DEBUG_DS_IOURING_SUBMIT_PERF
         printf("submit(usec) %f io_index=%lld buf=%p len=%lu off=%llu \n",
                submit_times.back().count() * 1e6,
                iocb_index,
-               aio_ctxt->_iocbs[i]->u.c.buf,
-               aio_ctxt->_iocbs[i]->u.c.nbytes,
-               aio_ctxt->_iocbs[i]->u.c.offset);
+               iouring_ctxt->_iocbs[i]->u.c.buf,
+               iouring_ctxt->_iocbs[i]->u.c.nbytes,
+               iouring_ctxt->_iocbs[i]->u.c.offset);
 #endif
         assert(submit_ret > 0);
     }
@@ -91,20 +91,20 @@ static void _do_io_submit_singles(const long long int n_iocbs,
 
 static void _do_io_submit_block(const long long int n_iocbs,
                                 const long long int iocb_index,
-                                std::unique_ptr<iouring_context>& aio_ctxt,
+                                std::unique_ptr<iouring_context>& iouring_ctxt,
                                 std::vector<std::chrono::duration<double>>& submit_times)
 {
     const auto st = std::chrono::high_resolution_clock::now();
     const auto submit_ret = io_submit(iouring_ctxt->_io_ctxt, n_iocbs, iouring_ctxt->_iocbs.data());
     submit_times.push_back(std::chrono::high_resolution_clock::now() - st);
-#if DEBUG_DS_AIO_SUBMIT_PERF
+#if DEBUG_DS_IOURING_SUBMIT_PERF
     printf("submit(usec) %f io_index=%lld nr=%lld buf=%p len=%lu off=%llu \n",
            submit_times.back().count() * 1e6,
            iocb_index,
            n_iocbs,
-           aio_ctxt->_iocbs[0]->u.c.buf,
-           aio_ctxt->_iocbs[0]->u.c.nbytes,
-           aio_ctxt->_iocbs[0]->u.c.offset);
+           iouring_ctxt->_iocbs[0]->u.c.buf,
+           iouring_ctxt->_iocbs[0]->u.c.nbytes,
+           iouring_ctxt->_iocbs[0]->u.c.offset);
 #endif
     assert(submit_ret > 0);
 }
@@ -123,17 +123,17 @@ static int _do_io_complete(const long long int min_completes,
     return n_completes;
 }
 
-void do_aio_operation_sequential(const bool read_op,
-                                 std::unique_ptr<iouring_context>& aio_ctxt,
+void do_iouring_operation_sequential(const bool read_op,
+                                 std::unique_ptr<iouring_context>& iouring_ctxt,
                                  std::unique_ptr<io_xfer_ctxt>& xfer_ctxt,
                                  deepspeed_iouring_config_t* config,
                                  deepspeed_iouring_perf_t* perf)
 {
-    struct io_prep_context prep_ctxt(read_op, xfer_ctxt, iouring_ctxt->_block_size, &aio_ctxt->_iocbs);
+    struct io_prep_context prep_ctxt(read_op, xfer_ctxt, iouring_ctxt->_block_size, &iouring_ctxt->_iocbs);
 
     const auto num_io_blocks = static_cast<long long int>(
         ceil(static_cast<double>(xfer_ctxt->_num_bytes) / iouring_ctxt->_block_size));
-#if DEBUG_DS_AIO_PERF
+#if DEBUG_DS_IOURING_PERF
     const auto io_op_name = std::string(read_op ? "read" : "write");
     std::cout << c_library_name << ": start " << io_op_name << " " << xfer_ctxt->_num_bytes
               << " bytes with " << num_io_blocks << " io blocks" << std::endl;
@@ -155,47 +155,47 @@ void do_aio_operation_sequential(const bool read_op,
         prep_ctxt.prep_iocbs(n_iocbs, num_bytes, start_buffer, start_offset);
 
         if (config->_single_submit) {
-            _do_io_submit_singles(n_iocbs, iocb_index, aio_ctxt, submit_times);
+            _do_io_submit_singles(n_iocbs, iocb_index, iouring_ctxt, submit_times);
         } else {
-            _do_io_submit_block(n_iocbs, iocb_index, aio_ctxt, submit_times);
+            _do_io_submit_block(n_iocbs, iocb_index, iouring_ctxt, submit_times);
         }
 
-        _do_io_complete(n_iocbs, n_iocbs, aio_ctxt, reap_times);
+        _do_io_complete(n_iocbs, n_iocbs, iouring_ctxt, reap_times);
     }
     const std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - start;
 
     if (perf) {
-        _get_aio_latencies(submit_times, perf->_submit);
-        _get_aio_latencies(reap_times, perf->_complete);
+        _get_iouring_latencies(submit_times, perf->_submit);
+        _get_iouring_latencies(reap_times, perf->_complete);
         perf->_e2e_usec = elapsed.count() * 1e6;
         perf->_e2e_rate_GB = (xfer_ctxt->_num_bytes / elapsed.count() / 1e9);
     }
 
-#if DEBUG_DS_AIO_PERF
-    _report_aio_statistics("submit", submit_times);
-    _report_aio_statistics("complete", reap_times);
+#if DEBUG_DS_IOURING_PERF
+    _report_iouring_statistics("submit", submit_times);
+    _report_iouring_statistics("complete", reap_times);
 #endif
 
-#if DEBUG_DS_AIO_PERF
+#if DEBUG_DS_IOURING_PERF
     std::cout << c_library_name << ": runtime(usec) " << elapsed.count() * 1e6
               << " rate(GB/sec) = " << (xfer_ctxt->_num_bytes / elapsed.count() / 1e9) << std::endl;
 #endif
 
-#if DEBUG_DS_AIO_PERF
+#if DEBUG_DS_IOURING_PERF
     std::cout << c_library_name << ": finish " << io_op_name << " " << xfer_ctxt->_num_bytes
               << " bytes " << std::endl;
 #endif
 }
 
-void do_aio_operation_overlap(const bool read_op,
-                              std::unique_ptr<aio_context>& aio_ctxt,
+void do_iouring_operation_overlap(const bool read_op,
+                              std::unique_ptr<iouring_context>& iouring_ctxt,
                               std::unique_ptr<io_xfer_ctxt>& xfer_ctxt,
-                              deepspeed_aio_config_t* config,
-                              deepspeed_aio_perf_t* perf)
+                              deepspeed_iouring_config_t* config,
+                              deepspeed_iouring_perf_t* perf)
 {
-    struct io_prep_generator io_gen(read_op, xfer_ctxt, aio_ctxt->_block_size);
+    struct io_prep_generator io_gen(read_op, xfer_ctxt, iouring_ctxt->_block_size);
 
-#if DEBUG_DS_AIO_PERF
+#if DEBUG_DS_IOURING_PERF
     const auto io_op_name = std::string(read_op ? "read" : "write");
     std::cout << c_library_name << ": start " << io_op_name << " " << xfer_ctxt->_num_bytes
               << " bytes with " << io_gen._num_io_blocks << " io blocks" << std::endl;
@@ -204,52 +204,52 @@ void do_aio_operation_overlap(const bool read_op,
     std::vector<std::chrono::duration<double>> submit_times;
     std::vector<std::chrono::duration<double>> reap_times;
 
-    auto request_iocbs = aio_ctxt->_queue_depth;
+    auto request_iocbs = iouring_ctxt->_queue_depth;
     auto n_pending_iocbs = 0;
     const auto min_completes = 1;
     auto start = std::chrono::high_resolution_clock::now();
     while (true) {
-        const auto n_iocbs = io_gen.prep_iocbs(request_iocbs - n_pending_iocbs, &aio_ctxt->_iocbs);
+        const auto n_iocbs = io_gen.prep_iocbs(request_iocbs - n_pending_iocbs, &iouring_ctxt->_iocbs);
         if (n_iocbs > 0) {
             if (config->_single_submit) {
                 _do_io_submit_singles(
-                    n_iocbs, (io_gen._next_iocb_index - n_iocbs), aio_ctxt, submit_times);
+                    n_iocbs, (io_gen._next_iocb_index - n_iocbs), iouring_ctxt, submit_times);
             } else {
                 _do_io_submit_block(
-                    n_iocbs, (io_gen._next_iocb_index - n_iocbs), aio_ctxt, submit_times);
+                    n_iocbs, (io_gen._next_iocb_index - n_iocbs), iouring_ctxt, submit_times);
             }
         }
 
         n_pending_iocbs += n_iocbs;
-        assert(n_pending_iocbs <= aio_ctxt->_queue_depth);
+        assert(n_pending_iocbs <= iouring_ctxt->_queue_depth);
 
         if (n_pending_iocbs == 0) { break; }
 
         const auto n_complete =
-            _do_io_complete(min_completes, n_pending_iocbs, aio_ctxt, reap_times);
+            _do_io_complete(min_completes, n_pending_iocbs, iouring_ctxt, reap_times);
         n_pending_iocbs -= n_complete;
     }
 
     const std::chrono::duration<double> elapsed = std::chrono::high_resolution_clock::now() - start;
 
     if (perf) {
-        _get_aio_latencies(submit_times, perf->_submit);
-        _get_aio_latencies(reap_times, perf->_complete);
+        _get_iouring_latencies(submit_times, perf->_submit);
+        _get_iouring_latencies(reap_times, perf->_complete);
         perf->_e2e_usec = elapsed.count() * 1e6;
         perf->_e2e_rate_GB = (xfer_ctxt->_num_bytes / elapsed.count() / 1e9);
     }
 
-#if DEBUG_DS_AIO_PERF
-    _report_aio_statistics("submit", submit_times);
-    _report_aio_statistics("complete", reap_times);
+#if DEBUG_DS_IOURING_PERF
+    _report_iouring_statistics("submit", submit_times);
+    _report_iouring_statistics("complete", reap_times);
 #endif
 
-#if DEBUG_DS_AIO_PERF
+#if DEBUG_DS_IOURING_PERF
     std::cout << c_library_name << ": runtime(usec) " << elapsed.count() * 1e6
               << " rate(GB/sec) = " << (xfer_ctxt->_num_bytes / elapsed.count() / 1e9) << std::endl;
 #endif
 
-#if DEBUG_DS_AIO_PERF
+#if DEBUG_DS_IOURING_PERF
     std::cout << c_library_name << ": finish " << io_op_name << " " << xfer_ctxt->_num_bytes
               << " bytes " << std::endl;
 #endif
@@ -303,7 +303,7 @@ int regular_read(const char* filename, std::vector<char>& buffer)
     return 0;
 }
 
-static bool _validate_buffer(const char* filename, void* aio_buffer, const long long int num_bytes)
+static bool _validate_buffer(const char* filename, void* iouring_buffer, const long long int num_bytes)
 {
     std::vector<char> regular_buffer;
     const auto reg_ret = regular_read(filename, regular_buffer);
@@ -313,19 +313,19 @@ static bool _validate_buffer(const char* filename, void* aio_buffer, const long 
 
     if (static_cast<long long int>(regular_buffer.size()) != num_bytes) { return false; }
 
-    return (0 == memcmp(aio_buffer, regular_buffer.data(), regular_buffer.size()));
+    return (0 == memcmp(iouring_buffer, regular_buffer.data(), regular_buffer.size()));
 }
 
-bool validate_aio_operation(const bool read_op,
+bool validate_iouring_operation(const bool read_op,
                             const char* filename,
-                            void* aio_buffer,
+                            void* iouring_buffer,
                             const long long int num_bytes)
 {
-    const auto msg_suffix = std::string("deepspeed_aio_") +
+    const auto msg_suffix = std::string("deepspeed_iouring_") +
                             std::string(read_op ? "read()" : "write()") +
                             std::string("using read()");
 
-    if (false == _validate_buffer(filename, aio_buffer, num_bytes)) {
+    if (false == _validate_buffer(filename, iouring_buffer, num_bytes)) {
         std::cout << "Fail: correctness of " << msg_suffix << std::endl;
         return false;
     }

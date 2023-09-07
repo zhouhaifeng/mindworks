@@ -132,18 +132,18 @@ def get_schedule(args, read_op):
     return schedule
 
 
-def _aio_handle_tasklet(pool_params):
+def _iouring_handle_tasklet(pool_params):
     args, tid, read_op = pool_params
 
     # Create schedule
     schedule = get_schedule(args, read_op)
     task_log(tid, f'schedule = {schedule}')
-    task_barrier(aio_barrier, args.threads)
+    task_barrier(iouring_barrier, args.threads)
 
     # Run pre task
     task_log(tid, f'running pre-task')
     ctxt = schedule["pre"]((args, tid))
-    task_barrier(aio_barrier, args.threads)
+    task_barrier(iouring_barrier, args.threads)
 
     # Run main tasks in a loop
     ctxt["main_task_sec"] = 0
@@ -168,7 +168,7 @@ def _init_tasklet(b):
     iouring_barrier = b
 
 
-def aio_handle_multiprocessing(args, read_op):
+def iouring_handle_multiprocessing(args, read_op):
     b = Barrier(args.threads)
     pool_params = [(args, p, read_op) for p in range(args.threads)]
     with Pool(processes=args.threads, initializer=_init_tasklet, initargs=(b, )) as p:

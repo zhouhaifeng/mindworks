@@ -15,7 +15,7 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #include <x86intrin.h>
 #endif
 
-#include <deepspeed_aio_common.h>
+#include <deepspeed_iouring_common.h>
 #include <stdlib.h>
 #include <torch/extension.h>
 

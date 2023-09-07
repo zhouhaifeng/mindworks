@@ -10,61 +10,61 @@ Licensed under the MIT license.
 Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 */
 
-#include "deepspeed_py_aio_handle.h"
+#include "deepspeed_py_iouring_handle.h"
 
 using namespace std;
 
-static void _start_aio_thread(std::shared_ptr<struct deepspeed_aio_thread_t> ctxt) { ctxt->run(); }
+static void _start_iouring_thread(std::shared_ptr<struct deepspeed_iouring_thread_t> ctxt) { ctxt->run(); }
 
-deepspeed_aio_handle_t::deepspeed_aio_handle_t(const int block_size,
+deepspeed_iouring_handle_t::deepspeed_iouring_handle_t(const int block_size,
                                                const int queue_depth,
                                                const bool single_submit,
                                                const bool overlap_events,
                                                const int num_threads)
-    : _aio_ctxt(new aio_context(block_size, queue_depth)),
+    : _iouring_ctxt(new iouring_context(block_size, queue_depth)),
       _single_submit(single_submit),
       _overlap_events(overlap_events),
       _num_threads(num_threads),
-      _aio_config(block_size, queue_depth, single_submit, overlap_events, false),
+      _iouring_config(block_size, queue_depth, single_submit, overlap_events, false),
       _num_pending_ops(0),
       _pinned_tensor_mgr(new deepspeed_pin_tensor_t())
 {
     for (auto i = 0; i < num_threads; ++i) {
-        _thread_contexts.push_back(std::make_shared<deepspeed_aio_thread_t>(i, _aio_config));
+        _thread_contexts.push_back(std::make_shared<deepspeed_iouring_thread_t>(i, _iouring_config));
     }
 
     for (auto& ctxt : _thread_contexts) {
-        _threads.push_back(std::thread(_start_aio_thread, ctxt));
+        _threads.push_back(std::thread(_start_iouring_thread, ctxt));
     }
 }
 
-deepspeed_aio_handle_t::~deepspeed_aio_handle_t()
+deepspeed_iouring_handle_t::~deepspeed_iouring_handle_t()
 {
     _stop_threads();
     for (auto& thr : _threads) { thr.join(); }
 }
 
-const int deepspeed_aio_handle_t::get_block_size() const
+const int deepspeed_iouring_handle_t::get_block_size() const
 {
-    return _aio_ctxt ? _aio_ctxt->_block_size : -1;
+    return _iouring_ctxt ? _iouring_ctxt->_block_size : -1;
 }
 
-const int deepspeed_aio_handle_t::get_queue_depth() const
+const int deepspeed_iouring_handle_t::get_queue_depth() const
 {
-    return _aio_ctxt ? _aio_ctxt->_queue_depth : -1;
+    return _iouring_ctxt ? _iouring_ctxt->_queue_depth : -1;
 }
 
-const bool deepspeed_aio_handle_t::get_single_submit() const { return _single_submit; }
+const bool deepspeed_iouring_handle_t::get_single_submit() const { return _single_submit; }
 
-const bool deepspeed_aio_handle_t::get_overlap_events() const { return _overlap_events; }
+const bool deepspeed_iouring_handle_t::get_overlap_events() const { return _overlap_events; }
 
-const int deepspeed_aio_handle_t::get_thread_count() const { return _num_threads; }
+const int deepspeed_iouring_handle_t::get_thread_count() const { return _num_threads; }
 
-int deepspeed_aio_handle_t::read(torch::Tensor& buffer, const char* filename, const bool validate)
+int deepspeed_iouring_handle_t::read(torch::Tensor& buffer, const char* filename, const bool validate)
 {
     const auto start_time = std::chrono::high_resolution_clock::now();
 
-    assert(_aio_ctxt);
+    assert(_iouring_ctxt);
 
     long long num_file_bytes;
     if (-1 == get_file_size(filename, num_file_bytes)) {
@@ -80,30 +80,30 @@ int deepspeed_aio_handle_t::read(torch::Tensor& buffer, const char* filename, co
     auto read_buffer = (char*)buffer.data_ptr();
     std::unique_ptr<io_xfer_ctxt> xfer_ctxt(new io_xfer_ctxt(fd, 0, num_file_bytes, read_buffer));
 
-    if (_aio_config._overlap_events) {
-        do_aio_operation_overlap(true, _aio_ctxt, xfer_ctxt, &_aio_config, nullptr);
+    if (_iouring_config._overlap_events) {
+        do_iouring_operation_overlap(true, _iouring_ctxt, xfer_ctxt, &_iouring_config, nullptr);
     } else {
-        do_aio_operation_sequential(true, _aio_ctxt, xfer_ctxt, &_aio_config, nullptr);
+        do_iouring_operation_sequential(true, _iouring_ctxt, xfer_ctxt, &_iouring_config, nullptr);
     }
 
     close(fd);
-    const std::chrono::duration<double> aio_time =
+    const std::chrono::duration<double> iouring_time =
         std::chrono::high_resolution_clock::now() - start_time;
 
-    if (validate) { validate_aio_operation(true, filename, read_buffer, num_file_bytes); }
+    if (validate) { validate_iouring_operation(true, filename, read_buffer, num_file_bytes); }
     const std::chrono::duration<double> fn_time =
         std::chrono::high_resolution_clock::now() - start_time;
     std::cout << "Elapsed time(usec): "
-              << "aio = " << aio_time.count() * 1e6 << " call = " << fn_time.count() * 1e6
+              << "aio = " << iouring_time.count() * 1e6 << " call = " << fn_time.count() * 1e6
               << std::endl;
     return 0;
 }
 
-int deepspeed_aio_handle_t::write(const torch::Tensor& buffer,
+int deepspeed_iouring_handle_t::write(const torch::Tensor& buffer,
                                   const char* filename,
                                   const bool validate)
 {
-    assert(_aio_ctxt);
+    assert(_iouring_ctxt);
 
     const auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -114,27 +114,27 @@ int deepspeed_aio_handle_t::write(const torch::Tensor& buffer,
     const auto num_write_bytes = static_cast<long long int>(buffer.nbytes());
     std::unique_ptr<io_xfer_ctxt> xfer_ctxt(new io_xfer_ctxt(fd, 0, num_write_bytes, write_buffer));
 
-    if (_aio_config._overlap_events) {
-        do_aio_operation_overlap(false, _aio_ctxt, xfer_ctxt, &_aio_config, nullptr);
+    if (_iouring_config._overlap_events) {
+        do_iouring_operation_overlap(false, _iouring_ctxt, xfer_ctxt, &_iouring_config, nullptr);
     } else {
-        do_aio_operation_sequential(false, _aio_ctxt, xfer_ctxt, &_aio_config, nullptr);
+        do_iouring_operation_sequential(false, _iouring_ctxt, xfer_ctxt, &_iouring_config, nullptr);
     }
-    const std::chrono::duration<double> aio_time =
+    const std::chrono::duration<double> iouring_time =
         std::chrono::high_resolution_clock::now() - start_time;
 
     close(fd);
 
-    if (validate) { validate_aio_operation(false, filename, write_buffer, num_write_bytes); }
+    if (validate) { validate_iouring_operation(false, filename, write_buffer, num_write_bytes); }
 
     const std::chrono::duration<double> fn_time =
         std::chrono::high_resolution_clock::now() - start_time;
     std::cout << "Elapsed time(usec): "
-              << "aio = " << aio_time.count() * 1e6 << " call = " << fn_time.count() * 1e6
+              << "aio = " << iouring_time.count() * 1e6 << " call = " << fn_time.count() * 1e6
               << std::endl;
     return 0;
 }
 
-void deepspeed_aio_handle_t::_schedule_aio_work(std::shared_ptr<struct io_op_desc_t> scheduled_op)
+void deepspeed_iouring_handle_t::_schedule_iouring_work(std::shared_ptr<struct io_op_desc_t> scheduled_op)
 {
     for (auto& ctxt : _thread_contexts) {
         {
@@ -146,7 +146,7 @@ void deepspeed_aio_handle_t::_schedule_aio_work(std::shared_ptr<struct io_op_des
     _num_pending_ops++;
 }
 
-std::shared_ptr<struct io_op_desc_t> deepspeed_aio_handle_t::_wait_for_aio_work()
+std::shared_ptr<struct io_op_desc_t> deepspeed_iouring_handle_t::_wait_for_iouring_work()
 {
     std::shared_ptr<struct io_op_desc_t> completed_op = nullptr;
     for (auto& ctxt : _thread_contexts) {
@@ -159,7 +159,7 @@ std::shared_ptr<struct io_op_desc_t> deepspeed_aio_handle_t::_wait_for_aio_work(
     return completed_op;
 }
 
-void deepspeed_aio_handle_t::_stop_threads()
+void deepspeed_iouring_handle_t::_stop_threads()
 {
     assert(0 == _num_pending_ops);
     for (auto& ctxt : _thread_contexts) {
@@ -171,20 +171,20 @@ void deepspeed_aio_handle_t::_stop_threads()
     }
 }
 
-int deepspeed_aio_handle_t::wait()
+int deepspeed_iouring_handle_t::wait()
 {
     assert(_num_pending_ops > 0);
     auto num_completed_ops = 0;
 
     while (_num_pending_ops > 0) {
-        auto completed_op = _wait_for_aio_work();
+        auto completed_op = _wait_for_iouring_work();
 
         completed_op->fini();
 
         close(completed_op->_fd);
 
         if (completed_op->_validate) {
-            validate_aio_operation(completed_op->_read_op,
+            validate_iouring_operation(completed_op->_read_op,
                                    completed_op->_filename.c_str(),
                                    completed_op->data_ptr(),
                                    _num_threads * completed_op->_num_bytes);
@@ -196,7 +196,7 @@ int deepspeed_aio_handle_t::wait()
     return num_completed_ops;
 }
 
-bool deepspeed_aio_handle_t::_is_valid_parallel_aio_op(const bool read_op,
+bool deepspeed_iouring_handle_t::_is_valid_parallel_iouring_op(const bool read_op,
                                                        const long long int num_bytes)
 {
     const auto op_string = read_op ? "Read" : "Write";
@@ -209,7 +209,7 @@ bool deepspeed_aio_handle_t::_is_valid_parallel_aio_op(const bool read_op,
     return true;
 }
 
-int deepspeed_aio_handle_t::pread(const torch::Tensor& buffer,
+int deepspeed_iouring_handle_t::pread(const torch::Tensor& buffer,
                                   const char* filename,
                                   const bool validate,
                                   const bool async)
@@ -228,7 +228,7 @@ int deepspeed_aio_handle_t::pread(const torch::Tensor& buffer,
     assert(static_cast<long long int>(buffer.nbytes()) == num_file_bytes);
     assert((num_file_bytes % _num_threads) == 0);
 
-    if (!_is_valid_parallel_aio_op(true, num_file_bytes)) { return -1; }
+    if (!_is_valid_parallel_iouring_op(true, num_file_bytes)) { return -1; }
 
     const auto fd = open_file(filename, true);
     if (fd == -1) { return -1; }
@@ -236,14 +236,14 @@ int deepspeed_aio_handle_t::pread(const torch::Tensor& buffer,
     auto scheduled_op = std::make_shared<io_op_desc_t>(
         true, buffer, fd, filename, (num_file_bytes / _num_threads), validate);
 
-    _schedule_aio_work(scheduled_op);
+    _schedule_iouring_work(scheduled_op);
 
     if (async) { return 0; }
 
     return wait();
 }
 
-int deepspeed_aio_handle_t::pwrite(const torch::Tensor& buffer,
+int deepspeed_iouring_handle_t::pwrite(const torch::Tensor& buffer,
                                    const char* filename,
                                    const bool validate,
                                    const bool async)
@@ -251,7 +251,7 @@ int deepspeed_aio_handle_t::pwrite(const torch::Tensor& buffer,
     const auto num_write_bytes = static_cast<long long int>(buffer.nbytes());
     assert((num_write_bytes % _num_threads) == 0);
 
-    if (!_is_valid_parallel_aio_op(false, num_write_bytes)) { return -1; }
+    if (!_is_valid_parallel_iouring_op(false, num_write_bytes)) { return -1; }
 
     const auto fd = open_file(filename, false);
     if (fd == -1) { return -1; }
@@ -259,40 +259,40 @@ int deepspeed_aio_handle_t::pwrite(const torch::Tensor& buffer,
     auto scheduled_op = std::make_shared<io_op_desc_t>(
         false, buffer, fd, filename, (num_write_bytes / _num_threads), validate);
 
-    _schedule_aio_work(scheduled_op);
+    _schedule_iouring_work(scheduled_op);
 
     if (async) { return 0; }
 
     return wait();
 }
 
-int deepspeed_aio_handle_t::sync_pread(torch::Tensor& buffer, const char* filename)
+int deepspeed_iouring_handle_t::sync_pread(torch::Tensor& buffer, const char* filename)
 {
     return pread(buffer, filename, false, false);
 }
 
-int deepspeed_aio_handle_t::sync_pwrite(const torch::Tensor& buffer, const char* filename)
+int deepspeed_iouring_handle_t::sync_pwrite(const torch::Tensor& buffer, const char* filename)
 {
     return pwrite(buffer, filename, false, false);
 }
 
-int deepspeed_aio_handle_t::async_pread(torch::Tensor& buffer, const char* filename)
+int deepspeed_iouring_handle_t::async_pread(torch::Tensor& buffer, const char* filename)
 {
     return pread(buffer, filename, false, true);
 }
 
-int deepspeed_aio_handle_t::async_pwrite(const torch::Tensor& buffer, const char* filename)
+int deepspeed_iouring_handle_t::async_pwrite(const torch::Tensor& buffer, const char* filename)
 {
     return pwrite(buffer, filename, false, true);
 }
 
-at::Tensor deepspeed_aio_handle_t::new_cpu_locked_tensor(const size_t num_elem,
+at::Tensor deepspeed_iouring_handle_t::new_cpu_locked_tensor(const size_t num_elem,
                                                          const torch::Tensor& example_tensor)
 {
     return _pinned_tensor_mgr->alloc(num_elem, example_tensor.scalar_type());
 }
 
-bool deepspeed_aio_handle_t::free_cpu_locked_tensor(torch::Tensor& locked_tensor)
+bool deepspeed_iouring_handle_t::free_cpu_locked_tensor(torch::Tensor& locked_tensor)
 {
     return _pinned_tensor_mgr->free(locked_tensor);
 }
