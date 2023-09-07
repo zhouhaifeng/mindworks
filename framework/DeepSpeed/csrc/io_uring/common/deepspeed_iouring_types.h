@@ -33,6 +33,7 @@ struct deepspeed_iouring_perf_t {
 };
 
 struct deepspeed_iouring_config_t {
+    struct io_uring ring;
     const int _block_size;
     const int _queue_depth;
     const bool _single_submit;
@@ -47,8 +48,9 @@ struct deepspeed_iouring_config_t {
                            const bool lock_memory);
 };
 
+/*
+io_uring不需要context
 struct iouring_context {
-    io_context_t _io_ctxt;
     std::vector<struct io_event> _io_events;
     std::vector<struct iocb*> _iocbs;
     int _block_size;
@@ -57,3 +59,4 @@ struct iouring_context {
     iouring_context(const int block_size, const int queue_depth);
     ~iouring_context();
 };
+*/

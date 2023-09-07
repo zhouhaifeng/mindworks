@@ -75,7 +75,7 @@ static void _do_io_submit_singles(const long long int n_iocbs,
 {
     for (auto i = 0; i < n_iocbs; ++i) {
         const auto st = std::chrono::high_resolution_clock::now();
-        const auto submit_ret = io_submit(iouring_ctxt->_io_ctxt, 1, iouring_ctxt->_iocbs.data() + i);
+        const auto submit_ret = io_uring_submit(iouring_ctxt->_io_ctxt, 1, iouring_ctxt->_iocbs.data() + i);
         submit_times.push_back(std::chrono::high_resolution_clock::now() - st);
 #if DEBUG_DS_IOURING_SUBMIT_PERF
         printf("submit(usec) %f io_index=%lld buf=%p len=%lu off=%llu \n",

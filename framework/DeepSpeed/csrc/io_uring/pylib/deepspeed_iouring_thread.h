@@ -10,7 +10,7 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #include <condition_variable>
 #include <memory>
 #include <queue>
-#include "deepspeed_py_aio.h"
+#include "deepspeed_py_iouring.h"
 
 struct io_op_desc_t {
     const bool _read_op;
@@ -38,11 +38,11 @@ struct thread_sync_t {
     std::condition_variable _cond_var;
 };
 
-struct deepspeed_aio_thread_t {
+struct deepspeed_iouring_thread_t {
     const int _tid;
-    deepspeed_aio_config_t& _aio_config;
+    deepspeed_iouring_config_t& _iouring_config;
 
-    std::unique_ptr<struct aio_context> _aio_ctxt;
+    std::unique_ptr<struct iouring_context> _iouring_ctxt;
     std::queue<std::shared_ptr<struct io_op_desc_t>> _work_queue;
     std::queue<std::shared_ptr<struct io_op_desc_t>> _complete_queue;
 
@@ -51,9 +51,9 @@ struct deepspeed_aio_thread_t {
     struct thread_sync_t _work_sync;
     struct thread_sync_t _complete_sync;
 
-    deepspeed_aio_thread_t(const int tid, deepspeed_aio_config_t& aio_config);
+    deepspeed_iouring_thread_t(const int tid, deepspeed_iouring_config_t& iouring_config);
 
-    ~deepspeed_aio_thread_t();
+    ~deepspeed_iouring_thread_t();
 
     void run();
 };
