@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // SPDX-License-Identifier: Apache-2.0
 
-// DeepSpeed Team
+// zhf
 
 /*
 Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
@@ -30,7 +30,7 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #include <string>
 #include <vector>
 
-#include "deepspeed_aio_common.h"
+#include "deepspeed_iouring_common.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -38,7 +38,7 @@ using namespace std::chrono;
 #define DEBUG_DS_AIO_PERF 0
 #define DEBUG_DS_AIO_SUBMIT_PERF 0
 
-static const std::string c_library_name = "deepspeed_aio";
+static const std::string c_library_name = "deepspeed_iouring";
 
 static void _report_iouring_statistics(const char* tag,
                                    const std::vector<std::chrono::duration<double>>& latencies)
@@ -70,12 +70,12 @@ static void _get_iouring_latencies(std::vector<std::chrono::duration<double>>& r
 
 static void _do_io_submit_singles(const long long int n_iocbs,
                                   const long long int iocb_index,
-                                  std::unique_ptr<aio_context>& aio_ctxt,
+                                  std::unique_ptr<iouring_context>& iouring_ctxt,
                                   std::vector<std::chrono::duration<double>>& submit_times)
 {
     for (auto i = 0; i < n_iocbs; ++i) {
         const auto st = std::chrono::high_resolution_clock::now();
-        const auto submit_ret = io_submit(aio_ctxt->_io_ctxt, 1, aio_ctxt->_iocbs.data() + i);
+        const auto submit_ret = io_submit(iouring_ctxt->_io_ctxt, 1, iouring_ctxt->_iocbs.data() + i);
         submit_times.push_back(std::chrono::high_resolution_clock::now() - st);
 #if DEBUG_DS_AIO_SUBMIT_PERF
         printf("submit(usec) %f io_index=%lld buf=%p len=%lu off=%llu \n",
@@ -91,11 +91,11 @@ static void _do_io_submit_singles(const long long int n_iocbs,
 
 static void _do_io_submit_block(const long long int n_iocbs,
                                 const long long int iocb_index,
-                                std::unique_ptr<aio_context>& aio_ctxt,
+                                std::unique_ptr<iouring_context>& aio_ctxt,
                                 std::vector<std::chrono::duration<double>>& submit_times)
 {
     const auto st = std::chrono::high_resolution_clock::now();
-    const auto submit_ret = io_submit(aio_ctxt->_io_ctxt, n_iocbs, aio_ctxt->_iocbs.data());
+    const auto submit_ret = io_submit(iouring_ctxt->_io_ctxt, n_iocbs, iouring_ctxt->_iocbs.data());
     submit_times.push_back(std::chrono::high_resolution_clock::now() - st);
 #if DEBUG_DS_AIO_SUBMIT_PERF
     printf("submit(usec) %f io_index=%lld nr=%lld buf=%p len=%lu off=%llu \n",
@@ -111,12 +111,12 @@ static void _do_io_submit_block(const long long int n_iocbs,
 
 static int _do_io_complete(const long long int min_completes,
                            const long long int max_completes,
-                           std::unique_ptr<aio_context>& aio_ctxt,
+                           std::unique_ptr<iouring_context>& iouring_ctxt,
                            std::vector<std::chrono::duration<double>>& reap_times)
 {
     const auto start_time = std::chrono::high_resolution_clock::now();
     const auto n_completes = io_getevents(
-        aio_ctxt->_io_ctxt, min_completes, max_completes, aio_ctxt->_io_events.data(), nullptr);
+        iouring_ctxt->_io_ctxt, min_completes, max_completes, iouring_ctxt->_io_events.data(), nullptr);
     reap_times.push_back(std::chrono::high_resolution_clock::now() - start_time);
 
     assert(n_completes >= min_completes);
@@ -124,15 +124,15 @@ static int _do_io_complete(const long long int min_completes,
 }
 
 void do_aio_operation_sequential(const bool read_op,
-                                 std::unique_ptr<aio_context>& aio_ctxt,
+                                 std::unique_ptr<iouring_context>& aio_ctxt,
                                  std::unique_ptr<io_xfer_ctxt>& xfer_ctxt,
-                                 deepspeed_aio_config_t* config,
-                                 deepspeed_aio_perf_t* perf)
+                                 deepspeed_iouring_config_t* config,
+                                 deepspeed_iouring_perf_t* perf)
 {
-    struct io_prep_context prep_ctxt(read_op, xfer_ctxt, aio_ctxt->_block_size, &aio_ctxt->_iocbs);
+    struct io_prep_context prep_ctxt(read_op, xfer_ctxt, iouring_ctxt->_block_size, &aio_ctxt->_iocbs);
 
     const auto num_io_blocks = static_cast<long long int>(
-        ceil(static_cast<double>(xfer_ctxt->_num_bytes) / aio_ctxt->_block_size));
+        ceil(static_cast<double>(xfer_ctxt->_num_bytes) / iouring_ctxt->_block_size));
 #if DEBUG_DS_AIO_PERF
     const auto io_op_name = std::string(read_op ? "read" : "write");
     std::cout << c_library_name << ": start " << io_op_name << " " << xfer_ctxt->_num_bytes
@@ -142,15 +142,15 @@ void do_aio_operation_sequential(const bool read_op,
     std::vector<std::chrono::duration<double>> submit_times;
     std::vector<std::chrono::duration<double>> reap_times;
     const auto max_queue_bytes =
-        static_cast<long long int>(aio_ctxt->_queue_depth * aio_ctxt->_block_size);
+        static_cast<long long int>(iouring_ctxt->_queue_depth * iouring_ctxt->_block_size);
 
     auto start = std::chrono::high_resolution_clock::now();
     for (long long iocb_index = 0; iocb_index < num_io_blocks;
-         iocb_index += aio_ctxt->_queue_depth) {
-        const auto start_offset = iocb_index * aio_ctxt->_block_size;
+         iocb_index += iouring_ctxt->_queue_depth) {
+        const auto start_offset = iocb_index * iouring_ctxt->_block_size;
         const auto start_buffer = (char*)xfer_ctxt->_mem_buffer + start_offset;
         const auto n_iocbs =
-            min(static_cast<long long>(aio_ctxt->_queue_depth), (num_io_blocks - iocb_index));
+            min(static_cast<long long>(iouring_ctxt->_queue_depth), (num_io_blocks - iocb_index));
         const auto num_bytes = min(max_queue_bytes, (xfer_ctxt->_num_bytes - start_offset));
         prep_ctxt.prep_iocbs(n_iocbs, num_bytes, start_buffer, start_offset);
 

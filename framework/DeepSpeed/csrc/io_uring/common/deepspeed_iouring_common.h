@@ -7,7 +7,7 @@
 Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 */
 
-#include <deepspeed_aio_utils.h>
+#include <deepspeed_iouring_utils.h>
 #include <stdlib.h>
 #include <memory>
 #include <string>
@@ -15,13 +15,13 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 using namespace std;
 
 void do_iouring_operation_sequential(const bool read_op,
-                                 std::unique_ptr<aio_context>& aio_ctxt,
+                                 std::unique_ptr<iouring_context>& iouring_ctxt,
                                  std::unique_ptr<io_xfer_ctxt>& xfer_ctxt,
                                  deepspeed_iouring_config_t* config,
                                  deepspeed_iouring_perf_t* perf);
 
 void do_iouring_operation_overlap(const bool read_op,
-                              std::unique_ptr<iouring_context>& aio_ctxt,
+                              std::unique_ptr<iouring_context>& iouring_ctxt,
                               std::unique_ptr<io_xfer_ctxt>& xfer_ctxt,
                               deepspeed_iouring_config_t* config,
                               deepspeed_iouring_perf_t* perf);
@@ -32,7 +32,7 @@ void report_file_error(const char* filename, const std::string file_op, const in
 
 int regular_read(const char* filename, std::vector<char>& buffer);
 
-bool validate_aio_operation(const bool read_op,
+bool validate_iouring_operation(const bool read_op,
                             const char* filename,
-                            void* aio_buffer,
+                            void* iouring_buffer,
                             const long long int num_bytes);

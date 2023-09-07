@@ -14,7 +14,8 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #include <string.h>
 
 #include <fcntl.h>
-#include <libaio.h>
+//#include <libaio.h>
+#include <liburing.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -27,6 +28,8 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <liburing/io_service.hpp>
 
 struct io_xfer_ctxt {
     const int _fd;

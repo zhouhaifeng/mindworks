@@ -9,7 +9,7 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 
 #include <cmath>
 
-#include "deepspeed_aio_utils.h"
+#include "deepspeed_iouring_utils.h"
 
 using namespace std;
 
@@ -68,7 +68,7 @@ aio_context::aio_context(const int block_size, const int queue_depth)
     io_queue_init(queue_depth, &_io_ctxt);
 }
 
-aio_context::~aio_context()
+aio_context::~iouring_context()
 {
     for (auto& iocb : _iocbs) { free(iocb); }
     _io_events.resize(0);
