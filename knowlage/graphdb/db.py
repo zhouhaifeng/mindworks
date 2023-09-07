@@ -9,6 +9,11 @@ from graphql import (
 import numpy as np
 import json
 
+#vectors = {
+#    "vector1": np.array([1.0, 2.0, 3.0]),
+#    "vector2": np.array([4.0, 5.0, 6.0]),
+#}
+
 class graphql:
     def __init__:
         self.client = None
