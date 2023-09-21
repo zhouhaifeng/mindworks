@@ -1,2 +1,2 @@
 config:
-  aws:region: cn-beijing
+  aws:region: us-east-2
