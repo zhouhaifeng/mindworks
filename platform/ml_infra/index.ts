@@ -1,24 +1,24 @@
 import * as pulumi from "@pulumi/pulumi";
-import * as aws from "@pulumi/aws";
-import * as awsx from "@pulumi/awsx";
-import * as eks from '@pulumi/eks';
+import * as alicloud from "@pulumi/alicloud";
+//import * as awsx from "@pulumi/awsx";
+//import * as cs from '@pulumi/cs';
 import * as random from '@pulumi/random';
 import * as k8s from '@pulumi/kubernetes';
-import S3ServiceAccount from './S3ServiceAccount';
+//import S3ServiceAccount from './S3ServiceAccount';
 import TraefikRoute from './TraefikRoute';
 
 
 // Create a Kubernetes cluster.
-const cluster = new eks.Cluster('cloud-ml-eks', {
+const cluster = new alicloud.cs.Cluster('cluster_mindworks', {
     createOidcProvider: true,
 });
 
 // Create database for MLFlow
 const dbPassword = new random.RandomPassword('cloud-ml-db-password', {length: 16, special: false});
-const db = new aws.rds.Instance('mlflow-db', {
-    allocatedStorage: 5,
-    engine: "postgres",
-    engineVersion: "11.11",
+const db = new alicloud.rds.Instance('mlflow-db', {
+    instanceStorage: 5,
+    engine: "PostgreSQL",
+    engineVersion: "14.0",
     instanceClass: "db.t3.micro",  //small, medium, large...
     name: "mlflow",
     password: dbPassword.result,
