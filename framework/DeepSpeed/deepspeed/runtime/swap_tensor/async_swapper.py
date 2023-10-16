@@ -10,20 +10,25 @@ import torch
 from deepspeed import comm as dist
 from deepspeed.utils.logging import logger
 from deepspeed.runtime.swap_tensor.utils import swap_out_tensors, SwapBuffer
+from enum import Enum
 
 INVALID_BUFFER_INDEX = -1
 ASYNC_SWAPPER_WAIT_TIMER = 'async_swap_gradient_wait'
 
+class IOType(Enum):
+    aio = 1
+    uio = 2
 
 class AsyncTensorSwapper(object):
 
-    def __init__(self, aio_handle, numel_alignment, timers):
+    def __init__(self, aio_handle, uio_handle, numel_alignment, timers, io_type):
         self.free_buffer_index = []
         self.swapping_buffer_index = []
         self.ready_buffer_index = []
         self.current_buffer_index = INVALID_BUFFER_INDEX
         self.all_buffers = []
         self.aio_handle = aio_handle
+        self.uio_handle = uio_handle
         self.numel_alignment = numel_alignment
         self.max_numel = 0
         self.num_pending_swaps = 0
@@ -31,6 +36,7 @@ class AsyncTensorSwapper(object):
         self.timer_names = set()
         self.num_elements_swapped = 0
         self.dtype = None
+        self.iotype = io_type
 
     def has_buffers(self):
         return len(self.all_buffers) > 0
@@ -130,7 +136,12 @@ class AsyncTensorSwapper(object):
             swap_tensors = buffer.get_swap_tensors()
             swap_paths = buffer.get_swap_paths()
             self.num_pending_swaps += len(swap_tensors)
-            swap_out_tensors(self.aio_handle, swap_tensors, swap_paths)
+            #modified by zhf begin
+            if self.iotype == IOType.aio:
+                aio_swap_out_tensors(self.aio_handle, swap_tensors, swap_paths)
+            if self.iotype == IOType.uio:
+                uio_swap_out_tensors(self.uio_handle, swap_tensors, swap_paths)
+            #modified by zhf end
 
         self.swapping_buffer_index += self.ready_buffer_index
         self.ready_buffer_index = []
@@ -139,7 +150,10 @@ class AsyncTensorSwapper(object):
         assert len(self.swapping_buffer_index) > 0
 
         self._start_timer(ASYNC_SWAPPER_WAIT_TIMER)
-        assert self.aio_handle.wait() == self.num_pending_swaps
+        if self.iotype == IOType.aio:
+            assert self.aio_handle.wait() == self.num_pending_swaps
+        if self.iotype == IOType.uio:
+            assert self.uio_handle.wait() == self.num_pending_swaps
         self._stop_timer(ASYNC_SWAPPER_WAIT_TIMER)
         self.timer_names.add(ASYNC_SWAPPER_WAIT_TIMER)
 
