@@ -47,9 +47,9 @@ class UIOBuilder(OpBuilder):
             '-fopenmp',
             SIMD_WIDTH,
             '-luring',
-            '-fcoroutines',
-            '-lcoroutine',
-            'Icsrc/includes/liburing'
+            '-fcoroutines', 
+            '-lcoroutine', 
+            'Icsrc/includes/liburing' 
         ]
 
     def extra_ldflags(self):
@@ -84,7 +84,7 @@ class UIOBuilder(OpBuilder):
         # If needed, one can define -I and -L entries in CFLAGS and LDFLAGS
         # respectively to specify the directories for liburing.h and liburing.so.
         uio_compatible = self.has_function('io_uring_submit', ('uio', ))
-        if verbose and not iouring_compatible:
+        if verbose and not uio_compatible:
             self.warning(f"{self.NAME} requires the dev liburing .so object and headers but these were not found.")
 
             # Check for the liburing package via known package managers
@@ -94,4 +94,4 @@ class UIOBuilder(OpBuilder):
             self.warning(
                 "If liburing is already installed (perhaps from source), try setting the CFLAGS and LDFLAGS environment variables to where it can be found."
             )
-        return super().is_compatible(verbose) and iouring_compatible
+        return super().is_compatible(verbose) and uio_compatible
