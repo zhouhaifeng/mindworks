@@ -57,6 +57,7 @@ def cuda_include_dir():
 
 
 def _build(name, src, srcdir):
+    #todo: add x86
     if is_hip():
         hip_lib_dir = os.path.join(rocm_path_dir(), "lib")
         hip_include_dir = os.path.join(rocm_path_dir(), "include")

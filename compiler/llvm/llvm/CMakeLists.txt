@@ -1,4 +1,8 @@
 # See docs/CMake.html for instructions about how to build LLVM with CMake.
+set(CMAKE_MAKE_PROGRAM /usr/bin/ninja)
+set(CMAKE_C_COMPILER /usr/bin/cc)
+set(CMAKE_CXX_COMPILER /usr/bin/c++)
+set(CMAKE_ASM_COMPILER /usr/bin/nasm)
 
 cmake_minimum_required(VERSION 3.13.4)
 

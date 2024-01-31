@@ -1778,6 +1778,13 @@ void init_triton_ir(py::module &&m) {
            })
       .def("add_scf_to_cfg", [](mlir::PassManager &self) {
         self.addPass(mlir::createConvertSCFToCFPass());
+      //added by zhf begin
+      .def("add_tritoncpu_accelerate_matmul_pass",
+           [](mlir::PassManager &self, int computeCapability) {
+             self.addPass(
+                 mlir::createTritonCPUAccelerateMatmulPass(computeCapability));
+           })
+       //added by zhf end
       });
 
   m.def("is_ws_supported", [](mlir::ModuleOp &mod) -> bool {
@@ -1976,6 +1983,47 @@ void init_triton_translation(py::module &m) {
         return hsacoCode;
       },
       ret::take_ownership);
+  //added by zhf begin
+  //triton ir -> llvmir 
+  m.def(
+      "translate_triton_cpu_to_llvmir",
+      [](mlir::ModuleOp op, int computeCapability,
+         //todo: check
+         mlir::triton::cpu::TMAMetadataTy &tmaInfos,
+         mlir::triton::Target target) {
+        py::gil_scoped_release allow_threads;
+        llvm::LLVMContext llvmContext;
+        auto llvmModule = ::mlir::triton::translateTritonToLLVMIR(
+            &llvmContext, op, computeCapability, tmaInfos, target);
+        if (!llvmModule)
+          llvm::report_fatal_error("Failed to translate Triton to LLVM IR.");
+
+        std::string str;
+        llvm::raw_string_ostream os(str);
+        llvmModule->print(os, nullptr);
+        os.flush();
+        return str;
+      },
+      ret::take_ownership);
+  //llvmir -> amx
+  m.def(
+      "translate_llvmir_to_amx",
+      [](const std::string llvmIR, std::string gfx_arch, std::string gfx_triple,
+         std::string gfx_features) -> std::tuple<std::string, std::string> {
+        // create LLVM module from C++
+        llvm::LLVMContext context;
+        std::unique_ptr<llvm::MemoryBuffer> buffer =
+            llvm::MemoryBuffer::getMemBuffer(llvmIR.c_str());
+        llvm::SMDiagnostic error;
+        std::unique_ptr<llvm::Module> module =
+            llvm::parseIR(buffer->getMemBufferRef(), error, context);
+        // translate module to AMX
+        auto amxCode = triton::translateLLVMIRToAMX(
+            *module, gfx_arch, gfx_triple, gfx_features);
+        return hsacoCode;
+      },
+      ret::take_ownership);
+  //added by zhf end
 }
 
 void init_triton(py::module &m) {
