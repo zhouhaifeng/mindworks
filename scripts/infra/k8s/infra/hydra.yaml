@@ -1,0 +1,72 @@
+# Namespace for Hydra components
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hydra
+
+---
+
+# Hydra Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hydra-service
+  namespace: hydra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hydra-service
+  template:
+    metadata:
+      labels:
+        app: hydra-service
+    spec:
+      containers:
+        - name: hydra-service
+          image: your-hydra-service-image:latest # Use your Hydra Service Docker image
+          ports:
+            - containerPort: 8080 # Port for the Hydra Service
+
+---
+
+# Hydra Worker Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hydra-worker
+  namespace: hydra
+spec:
+  replicas: 2 # You can adjust the number of worker replicas as needed
+  selector:
+    matchLabels:
+      app: hydra-worker
+  template:
+    metadata:
+      labels:
+        app: hydra-worker
+    spec:
+      containers:
+        - name: hydra-worker
+          image: your-hydra-worker-image:latest # Use your Hydra Worker Docker image
+          env:
+            - name: HYDRA_SERVICE_URL
+              value: "http://hydra-service:8080" # Point the worker to the Hydra Service
+
+
+---
+
+# Hydra Export Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: hydra-export
+  namespace: hydra
+spec:
+  selector:
+    app: hydra-service
+  ports:
+    - protocol: TCP
+      port: 8000 # Port for exporting Hydra service
+      targetPort: 8080 # Target port of the Hydra Service
+

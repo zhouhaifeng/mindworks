@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dvc-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dvc
+  template:
+    metadata:
+      labels:
+        app: dvc
+    spec:
+      containers:
+        - name: dvc
+          image: dvcorg/dvc:latest # Use the DVC Docker image from Docker Hub
+          ports:
+            - containerPort: 8080 # Adjust the port if necessary
+          env:
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dvc-service
+spec:
+  selector:
+    app: dvc
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: NodePort # Use NodePort for local cluster
+

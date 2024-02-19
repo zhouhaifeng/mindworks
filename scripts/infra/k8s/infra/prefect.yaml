@@ -1,0 +1,54 @@
+# Namespace for Prefect components
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prefect
+
+---
+
+# Prefect Server Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefect-server
+  namespace: prefect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prefect-server
+  template:
+    metadata:
+      labels:
+        app: prefect-server
+    spec:
+      containers:
+        - name: prefect-server
+          image: prefecthq/prefect:latest # Use the Prefect Server Docker image
+          ports:
+            - containerPort: 8080 # Prefect Server port
+
+---
+
+# Prefect Agent Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefect-agent
+  namespace: prefect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prefect-agent
+  template:
+    metadata:
+      labels:
+        app: prefect-agent
+    spec:
+      containers:
+        - name: prefect-agent
+          image: prefecthq/prefect-agent:latest # Use the Prefect Agent Docker image
+          env:
+            - name: PREFECT__SERVER__URL
+              value: "http://prefect-server:8080" # Point the agent to the Prefect Server

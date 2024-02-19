@@ -1,0 +1,3 @@
+name: ml_infra
+runtime: python
+description: A minimal alicloud python Pulumi program

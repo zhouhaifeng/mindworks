@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argo-server
+  namespace: argo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argo-server
+  template:
+    metadata:
+      labels:
+        app: argo-server
+    spec:
+      containers:
+        - name: argo-server
+          image: argoproj/argocli:v3.8.1  # Use the Argo Workflows version you prefer
+          command: ["argo", "server"]
+          ports:
+            - containerPort: 2746  # Port for the Argo Workflows server
+          args:
+            - "--namespace=argo"
+            - "--auth-mode=Server"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argo-server
+  namespace: argo
+spec:
+  selector:
+    app: argo-server
+  ports:
+    - protocol: TCP
+      port: 2746  # Port for the Argo Workflows server
+      targetPort: 2746
+

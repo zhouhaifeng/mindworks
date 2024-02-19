@@ -1,0 +1,29 @@
+server {
+    listen 80 default_server;
+
+    location /analyze {
+        rewrite ^/analyze(.*) $1 break;
+        proxy_pass  http://127.0.0.1:15000;
+    }
+
+    location /data {
+        rewrite ^/data(.*) $1 break;
+        proxy_pass  http://127.0.0.1:15001;
+    }
+
+    location /model {
+        rewrite ^/model(.*) $1 break;
+        proxy_pass  http://127.0.1:15003;
+    }
+
+    location /cis {
+        rewrite ^/cis(.*) $1 break;
+        proxy_pass  http://127.0.0.1:15004;
+    }
+
+    location /spider {
+        rewrite ^/spider(.*) $1 break;
+        proxy_pass  http://127.0.0.1:15005;
+    }
+
+}

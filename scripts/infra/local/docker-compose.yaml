@@ -1,0 +1,101 @@
+
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx:/etc/nginx/conf.d"
+      - "./logs:/var/log/nginx"
+      - "./html:/usr/share/nginx/html"
+    restart: always
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+    networks:
+      - mindworks
+  #todo: dvc
+  #flink
+  jobmanager:
+    image: flink:1.14.0
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    restart: always
+    networks:
+      - mindworks
+  taskmanager:
+    image: flink:1.14.0
+    command: taskmanager
+    restart: always
+    depends_on:
+      - jobmanager
+    networks:
+      - mindworks
+  #todo: hudi
+  #hydra
+
+  mlflow:
+    image: larribas/mlflow:latest
+    ports:
+      - 10000:10000
+    volumes:
+      - ./mlflow:/mlflow
+    environment:
+      - BACKEND_STORE_URI=sqlite:///mlflow/mlflow.db
+    command: server --host 0.0.0.0 --port 10000 --default-artifact-root /mlflow/artifacts
+    restart: always
+    networks:
+      - mindworks
+  #todo: jupyter + pytorch + deepspeed
+  jupyter:
+    image: jupyter/datascience-notebook:latest
+    container_name: jupyter
+    ports:
+      - 11000:11000
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    restart: always
+    networks:
+      - mindworks
+  #todo: replacing by fine-tuned llm
+  elasticsearch:
+    image: bitnami/elasticsearch:latest
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: always
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - 12000:12000
+      - 13000:13000
+  #todo: kibana
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - 14000:14000
+    command: server /data  #指定容器中的目录 /data
+    restart: always
+    environment:
+      MINIO_ACCESS_KEY: minio    #管理后台用户名
+      MINIO_SECRET_KEY: minioxxx #管理后台密码，最小8个字符
+    networks:
+      - mindworks
+    volumes:
+      - ./data:/data              #映射当前目录下的data目录至容器内/data目录
+      - ./config:/root/.minio/     #映射配置目录
+  #todo: prometheus
+
+networks:
+  mindworks:
+    driver: bridge

@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+        - name: mlflow
+          image: registry.mlflow.org/mlflow/mlflow:latest # Use the MLflow Docker image
+          ports:
+            - containerPort: 5000 # Port for MLflow UI
+          env:
+            - name: BACKEND_STORE_URI
+              value: /mlflow/backend-store # Specify the backend store URI
+            - name: ARTIFACT_ROOT
+              value: /mlflow/artifacts # Specify the artifact store location
+            - name: MLFLOW_DB
+              value: "sqlite:///mlflow.db" # Use SQLite as the backend database (customize as needed)
+
+---
+
+# MLflow Export Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-export
+  namespace: mlflow
+spec:
+  selector:
+    app: mlflow-server
+  ports:
+    - protocol: TCP
+      port: 8000 # Port for exporting MLflow service
+      targetPort: 5000 # Target port of the MLflow Server
+
+
+---
+
+# MLflow Tracking Server Deployment (Optional)
+# Uncomment this section if you want to deploy the tracking server
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: mlflow-tracking-server
+#   namespace: mlflow
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: mlflow-tracking-server
+#   template:
+#     metadata:
+#       labels:
+#         app: mlflow-tracking-server
+#     spec:
+#       containers:
+#         - name: mlflow-tracking-server
+#           image: mlflow/mlflow-tracking-server:latest # Use the MLflow Tracking Server Docker image
+#           ports:
+#             - containerPort: 5001 # Port for the Tracking Server
+

@@ -1,0 +1,9 @@
+FROM nvcr.io/nvidia/pytorch:21.09-py3
+
+WORKDIR /app
+
+RUN pip install deepspeed
+
+COPY . .
+
+#CMD ["bash", "-c", "deepspeed --num_gpus 1 your_script.py"]

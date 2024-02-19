@@ -1,0 +1,55 @@
+# Namespace for Traefik
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: traefik
+
+---
+
+# Traefik Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik-deployment
+  namespace: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      containers:
+        - name: traefik
+          image: traefik:v2.5 # Use the Traefik Docker image version you prefer
+          args:
+            - --providers.kubernetescrd=true
+            - --entrypoints.web.address=:80 # Define your desired entrypoint (HTTP)
+            - --entrypoints.websecure.address=:443 # Define your desired entrypoint (HTTPS)
+            - --api.insecure=true # Enable Traefik's API (insecure for local testing)
+          ports:
+            - containerPort: 80 # HTTP port
+            - containerPort: 443 # HTTPS port
+
+---
+
+# Traefik Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-service
+  namespace: traefik
+spec:
+  selector:
+    app: traefik
+  ports:
+    - protocol: TCP
+      port: 80 # Port for HTTP traffic
+      targetPort: 80 # Target port of the Traefik container
+    - protocol: TCP
+      port: 443 # Port for HTTPS traffic
+      targetPort: 443 # Target port of the Traefik container
+

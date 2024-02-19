@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+spec:
+  replicas: 1  # You can adjust the number of replicas as needed
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest  # Use the MySQL image and tag you prefer
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: your-root-password  # Set your desired root password here
+            - name: MYSQL_DATABASE
+              value: your-database-name  # Set the name of your MySQL database
+            - name: MYSQL_USER
+              value: your-username  # Set your MySQL username
+            - name: MYSQL_PASSWORD
+              value: your-password  # Set your MySQL user's password
+          ports:
+            - containerPort: 3306  # Port for MySQL
+            
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mysql
+  ports:
+    - protocol: TCP
+      port: 3306  # Port to access MySQL
+      targetPort: 3306
+  type: ClusterIP  # Use ClusterIP for internal access; consider using LoadBalancer or NodePort for external access

@@ -1,0 +1,77 @@
+# Namespace for Feast components
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: feast
+
+---
+
+# Feast Core Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feast-core
+  namespace: feast
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feast-core
+  template:
+    metadata:
+      labels:
+        app: feast-core
+    spec:
+      containers:
+        - name: feast-core
+          image: feast-dev/feast-core:latest # Use the Feast Core Docker image
+          ports:
+            - containerPort: 6565 # Feast Core port
+
+---
+
+# Feast Batch Serving Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feast-batch-serving
+  namespace: feast
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feast-batch-serving
+  template:
+    metadata:
+      labels:
+        app: feast-batch-serving
+    spec:
+      containers:
+        - name: feast-batch-serving
+          image: feast-dev/feast-batch-serving:latest # Use the Feast Batch Serving Docker image
+          ports:
+            - containerPort: 6566 # Feast Batch Serving port
+
+---
+
+# Feast Online Serving Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feast-online-serving
+  namespace: feast
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feast-online-serving
+  template:
+    metadata:
+      labels:
+        app: feast-online-serving
+    spec:
+      containers:
+        - name: feast-online-serving
+          image: feast-dev/feast-online-serving:latest # Use the Feast Online Serving Docker image
+          ports:
+            - containerPort: 6567 # Feast Online Serving port
