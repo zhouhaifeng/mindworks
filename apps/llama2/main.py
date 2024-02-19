@@ -49,29 +49,30 @@ def set_qa_prompt():
 
 
 # Build RetrievalQA object 
-def build_retrieval_qa(llm, prompt, vectordb): 
-    dbqa = RetrievalQA.from_chain_type(llm=llm, 
+def build_retrieval_qa(llama, prompt, vectordb): 
+    dbqa = RetrievalQA.from_chain_type(llm=llama, 
                                        chain_type='stuff', 
                                        retriever=vectordb.as_retriever(search_kwargs={'k':2}), 
                                        return_source_documents=True, 
                                        chain_type_kwargs={'prompt': prompt}) 
     return dbqa 
 
-def build_llm():
+def build_llama():
     # Local CTransformers wrapper for Llama-2-7B-Chat 
-    llm = CTransformers(model='models/llama-2-7b-chat.ggmlv3.q8_0.bin', # Location of downloaded GGML model 
+    llama = CTransformers(model='models/llama-2-7b-chat.ggmlv3.q8_0.bin', # Location of downloaded GGML model 
                     model_type='llama', # Model type Llama 
                     config={'max_new_tokens': 256, 
                             'temperature': 0.01})
+    return llama
 
 # Instantiate QA object 
 def setup_dbqa(): 
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", 
                                        model_kwargs={'device': 'cpu'}) 
     vectordb = FAISS.load_local('vectorstore/db_faiss', embeddings) 
-    llm = build_llm()
+    llama = build_llama()
     qa_prompt = set_qa_prompt() 
-    dbqa = build_retrieval_qa(llm, qa_prompt, vectordb) 
+    dbqa = build_retrieval_qa(llama, qa_prompt, vectordb) 
 
     return dbqa
 

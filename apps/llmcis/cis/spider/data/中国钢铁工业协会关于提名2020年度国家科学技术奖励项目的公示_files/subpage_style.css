@@ -1,0 +1,204 @@
+a {
+	text-decoration: none;
+	color: #898989;
+}
+a:hover {
+	text-decoration: underline;
+	color: #ff5b00;
+}
+.postion {
+	margin-right: 0px;
+	width: 90%;
+	margin-bottom: 10px;
+	margin-left: 20px;
+	height: 25px;
+	margin-top: 0px;
+	padding-top: 0px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+}
+.postion_text {
+	font-family: "宋体";
+	font-size: 12px;
+	font-weight: normal;
+	text-decoration: none;
+	background-image: url(../images/icon_postion.gif);
+	background-repeat: no-repeat;
+	background-position: left bottom;
+	padding-left: 20px;
+	color: #898989;
+	vertical-align: bottom;
+}
+
+.subpage_mid {
+	margin-bottom: 10px;
+	margin-left: 2px;
+}
+.subpage_subnav_bg {
+	background-image: url(../images/subpage_subnav_pic.jpg);
+	background-repeat: no-repeat;
+	background-color: #7e9acb;
+	background-position: bottom;
+	height: 559px;
+}
+.subpage_subnav_list_menu {
+	background-color: #6c89bc;
+}
+.subpage_subnav_list_li {
+	border-bottom-width: 1px;
+	border-bottom-style: dashed;
+	border-bottom-color: #bbcbe1;
+	padding-top: 6px;
+}
+.subpage_subnav_list_li_text {
+	font-family: "微软雅黑";
+	font-size: 14px;
+	font-weight: normal;
+	color: #FFF;
+	text-decoration: none;
+}
+
+.subpage_subnav_list_li1 {
+	border-bottom-width: 1px;
+	border-bottom-style: dashed;
+	border-bottom-color: #bbcbe1;
+	padding-top: 6px;
+}
+.subpage_subnav_list_li_text1 {
+	font-family: "微软雅黑";
+	font-size: 14px;
+	font-weight: normal;
+	color: #FFF;
+	text-decoration: none;
+}
+
+A.subpage_subnav_list_li_text:link {
+	color: #FFF;
+	text-decoration: none;
+}
+A.subpage_subnav_list_li_text:active {
+	background-color: #4d6ba3;
+	color: #FFF;
+	text-decoration: none;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+A.subpage_subnav_list_li_text:hover {
+	background-color: #4d6ba3;
+	color: #FFF;
+	text-decoration: none;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+.subpage_topic_bgcolor {
+	background-color: #c5cbda;
+	margin-bottom: 20px;
+}
+
+.subpage_topic {
+	height: 24px;
+	background-position: left;
+	background-image: url(../images/icon_titlename.gif);
+	background-repeat: no-repeat;
+	font-family: "微软雅黑";
+	font-size: 16px;
+	font-weight: bold;
+	color: #534640;
+	text-decoration: none;
+	padding-left: 20px;
+	padding-right: 10px;
+	background-color: #FFF;
+}
+.subpage_inf_width {
+	width: 620px;
+	margin-left: 8px;
+	margin-bottom: 10px;
+}
+.subpage_inflist_li{
+	background-image: url(../images/icon_list.gif);
+	background-repeat: no-repeat;
+	background-position: 5px 11px;
+	padding-left: 25px;
+	border-bottom-width: 1px;
+	border-bottom-style: dashed;
+	border-bottom-color: #CCC;
+}
+.subpage_inflist_text {
+	display: block;
+	height: 12px;
+	width: 82%;
+	overflow: hidden;
+	float: left;
+	color: #000;
+	text-decoration: none;
+	font-family: "宋体";
+	font-size: 12px;
+	font-weight: normal;
+	padding-top: 10px;
+	padding-bottom: 2px;
+}
+A.subpage_inflist_text:link {
+	color: #000;
+	text-decoration: none;
+}
+A.subpage_inflist_text:active {
+	color: #ff5b00;
+	text-decoration: none;
+}
+A.subpage_inflist_text:hover {
+	color: #ff5b00;
+	text-decoration: none;
+}
+.subpage_inflist_date {
+	display: block;
+	height: 12px;
+	overflow: hidden;
+	color: #898989;
+	text-decoration: none;
+	font-family: "宋体";
+	font-size: 12px;
+	font-weight: normal;
+	padding-top: 10px;
+	padding-bottom: 2px;
+	padding-left: 40px;
+}
+.subpage_inftitle_1 {
+	font-weight: normal;
+	color: #000;
+	text-decoration: none;
+	font-family: "黑体";
+	font-size: 22px;
+	text-align: center;
+}
+.subpage_inftitle_1time {
+	font-weight: bold;
+	color: #4b4b4b;
+	text-decoration: none;
+	font-family: "微软雅黑";
+	font-size: 12px;
+	text-align: center;
+	line-height: 25px;
+	background-color: #eef2f4;
+}
+.subpage_inftitle_1time_red {
+	color: #ff0000;
+}
+.subpage_inftitle_1_table {
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-right-color: #b9b9b9;
+	border-bottom-color: #b9b9b9;
+	border-left-color: #b9b9b9;
+	margin-bottom: 20px;
+}
+p{
+	text-indent: 2em;
+	line-height: 18px;
+	padding-bottom: 10px;
+	margin-right: 20px;
+	margin-left: 20px;
+}

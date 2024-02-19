@@ -1,0 +1,6 @@
+@startuml
+actor spiderman
+spiderman -> spiderman: spiderman下载配置文件定义的链接
+spiderman -> flink: 将下载的文件通过kafka发送给flink
+#spiderman -> minio: 保存下载的文件
+@enduml

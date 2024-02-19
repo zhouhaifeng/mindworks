@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>欢迎使用钢协门户</title>
+<style type="text/css">
+<!--
+-->
+</style>
+
+
+<link href="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/style2.css" rel="stylesheet" type="text/css">
+
+<link href="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/subpage_style.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/slide.js"></script>
+<script type="text/JavaScript">
+suitHeight=function(){
+        var fm=document.getElementById('mframe');
+        if(document.getElementById){
+            if(fm.contentDocument&&fm.contentDocument.body.offsetHeight)//如果用户的浏览器是NetScape
+                fm.height=fm.contentDocument.body.offsetHeight; 
+            else if(fm.Document&&fm.Document.body.scrollHeight) //如果用户的浏览器是IE
+                fm.height=fm.Document.body.scrollHeight;
+        }
+        try{
+            fm.height=parseInt(fm.height.replace(/px|pt/g,''),10)+150;
+        }catch(e){
+        }
+    }
+    function setIframeHeight(iframe)
+    {
+        if (document.getElementById)
+        {
+            if (iframe && !window.opera)
+            {
+                if (iframe.contentDocument && iframe.contentDocument.body.offsetHeight)
+                    iframe.height = iframe.contentDocument.body.offsetHeight;
+                else if(iframe.Document && iframe.Document.body.scrollHeight)
+                    iframe.height = iframe.Document.body.scrollHeight;
+            }
+        }
+    }
+	function reiframe(){
+	var iframe=document.getElementById("mframe");
+	try{
+	var bheight=iframe.contentWindow.document.body.scrollHeight;
+	var dheight=iframe.contentWindow.document.documentElement.scrollHeight;
+	var height=Math.max(bheight,dheight);
+	iframe.height=height;
+	}catch(ex){}
+	}
+	window.setInterval("reiframe()",200);
+</script>
+
+<script language="JavaScript">
+
+	function call(htmlurl) {
+	var newwin=window.open(htmlurl,"_blank","top=0,left=0,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,fullscreen=1");//修改宽度和高度可控制窗口的大小
+	newwin.focus();
+	return false;}
+</script>
+
+</head>
+
+<body>
+
+<div id="wrapper">
+    <div id="logo">
+      <div id="pic_logo"></div>
+      <div id="pic_logo_right"></div>
+      <form id="search" name="form1" method="post" action="" class="search">
+        <!-- <label>站内搜索：
+          <input  ype="text" name="textfield" id="textfield" />
+        </label>
+        <img src="/gxportal/File/module/3/images/button_allsearch.gif" width="57" height="21" align="absbottom" /> -->
+        
+      </form>
+    </div>
+  
+    <div id="nav1">	
+			      <div id="left_jiao"></div>
+		
+			        <ul id="nav"><li class="mainlevelIndex" id="mainlevel_01"><a href="http://211.103.229.61/gxportal/?notConfirm=true">首页</a></li><li class="mainlevel" id="mainlevel_01"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=B2ReYQhjUjMFZAI1BWIGZ1QwCWpTN1BnVWZWZgVnVWJQQwhHW0ACMAMSBkFRRgVl">钢铁协会</a><ul id="sub_01"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=CmkIN1oxVDVWNw84VDMEZQNnAWIDZwA3X2wCMVQ0UmcFFgpFW0BVZwARD0gCFVAw">钢协简介</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=AGMINwBrUzIFZFRjUDcHZgFlUjFTN1NkV2QENARnUWUKGVkWChFQYlBBUhVUQ1Aw">钢协领导</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=B2QAPwhjVzZQMVBnUjUNbAZiBWYEYFNkUGMAMFIxAjcFFl0SCxAAMgUUBUICFVEx">钢协章程</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UzALNA9kUTAEZVJlVDMHZgJmCWoFYQE2U2BWZlc3BDJTQAtECxBWZAsaUhVSRQdn">钢协机关</a></li></ul></li><li class="mainlevel" id="mainlevel_02"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=AGMPMA9kWDlWN1dgBWJXNgxoCGsHYwYxVmUFNgRmVmRWRQpFDxRRYwARBkFWQQRk">钢协会员</a><ul id="sub_01"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=AmEMMw1mAGFWNwUyUzRQMVQwBWYEYAM0ADMIOwVlUmBXRFwTXkVSYFdGB0ADFAdn">钢协会员</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BWYLNABrAGEKa1JlXjlWN1E1AWIJbQQzUGMANVM4BzNXRFkWDRZUZgobUBdXQAxs">会长单位</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BGcJNlw3VTQAYQE2BGMMbQRgA2BVMQcwBzQIPVkyBjMAEwtEDRYAMgEQVxADFAdn">副会长单位</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=CmkNMl41UjMEZQ84XjkCY1M3UjFWMlNkX2xVYFgzDTtWRV4RCxBXZVFAVxBSRQxs">常务理事</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BGcMM1swVjcHZgcwVDMEZQ1pUjEFYVtsX2wJPFE6AjVWRVkWCRJQYlRFUxReSQxs">理事单位</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UDMAPw9kUzIFZA84XjkFZFczBmVWMlFmAjEEMVc8VmYHFAlGXEdUZlBBAEdRRgNj">个人会员</a></li></ul></li><li class="mainlevel" id="mainlevel_03"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BmUINw9kVjcAYQM0B2AMbVYyUzAJbVFmUmFTYABjBzcDEAxDCBMHNQEQUBdUQwxs">专题报道</a><ul id="sub_03"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=C2hdYlw3A2IKa1NkAGdQMQdjUDNTNwA3V2QAMgJgADxQQw5BCBNYalBBBUJXQAxs">钢协理事会</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UTJdYgxnBWQKawcwXzgGZwxoAWIGYlZhVWYBMgRiBTVWRQtECRJSYFBBVRJSRQ1t">新闻发布会</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VjUPMA5lBWQBYFJlUTYMbQZiCGtSNlZhBDcAMwNlUGICEQxDARpRYwcWAkUDFFEx">劳模表彰</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VDcPMF41AmNQMVViAGcHZlA0VzQDZ1ZhUGNWZgVlBzUFFgtEDhUAMlBBDklUQwFh">冶金绿化</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UzAAPw9kAGFXNgYxVDMHZgVhB2QJbVViUWIJOQBiBjYFFloVW0BTYVZHAUYCFQNj">技能大赛</a></li></ul></li><li class="mainlevel" id="mainlevel_04"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VzQAPw9kVzZRMA84XjlXNlYyUzABZVNkUWIFNgBjUmABEloVWkEHNQcWVxAAFwNj">成果奖励</a><ul id="sub_04"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BWYOMQtgA2IHZldgVzAFZANnVzRRNVZhVGcJOlM0ATUKGQ5BDRYFN1dGDkkCFQdn">冶金科技奖</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=C2hdYghjUDEEZVBnBGNVNFYyBGcEYFViAzAAMgJgUGMHFA5BCRJYagEQD0hVQlEx">管理创新成果</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VzQLNAFqVDVXNlRjVDNQMQJmVDdRNQQzU2AGNVcwDTsBEl0SDBdVZ1dGB0BeSVc3">环境友好企业</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VDcAP1swVzZTMgQzVjEDYgdjCGsBZQcwUWIJOgBnBzICEQtEW0AFNwARVBNVQlU1">市场开拓奖</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UTJbZF41UzJRMAcwUTZQMQxoVTYBZVFmXm0IOwViDDsEF1wTCxADMVZHVBNQRwxs">质量金杯奖</a></li></ul></li><li class="mainlevel" id="mainlevel_05"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BWYLNABrVTRWNwI1AGdVNA1pBmVVMVBnVmUJOQNjAzQLGAtEXkUCMAYXBUICFQdn">节能减排</a><ul id="sub_05" style="display: none;"></ul></li><li class="mainlevel" id="mainlevel_06"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BWZdYgliBGUEZQ45UDdVNFM3BmUIbFptVGcIOFEzBDUDEAFOCBMFN1FADkkDFANj">国际交流</a><ul id="sub_06"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VDdeYQphVDVWN1JlB2AFZANnAmEEYAcwU2BSYlIxDTxQQwpFXkVUZgEQAEdRRgxs">外事动态</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VDdaZQ5lVzYCYwQzAmVSM1YyAGNWMlNkBzQDM1IxUmEBEgBPDhVXZQMSA0QDFARk">国际会展</a></li></ul></li><li class="mainlevel" id="mainlevel_06"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BWYNMg9kBWRXNlRjVDMGZ1QwUjFSNgA3UGNSZ1A2UWUAEwlGDxQHNVFABUJRRgxs">党建工作</a><ul id="sub_06"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UzAJNghjVjcAYVRjUDdVNAZiVDcJbVZhVGdTZwBqAz9QQwtEDBdXZQobBUJVQgRk">主题教育</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=AGNcYwliBGVUNVRjB2BSMw1pCGsFYQA3VWZSZlAyAjMCEQ9AW0BUZlZHUBdUQ1Aw">两学一做</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VzQJNgBrB2ZQMQUyAmUGZwdjBWYGYgA3X2xUYVQ1BjUAE1wTDxRQYlFAUxRfSFU1">代表大会</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BGcJNg1mAGELagYxAmUDYlA0B2RUMAA3BzQGNVM1UGEBEgtEABsENldGAUZSRQJi">创先争优</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=B2RcYw9kAGFUNQA3VDMDYlA0CWoCZlptVWYGMgBhDTwDEF0SARpQYlFADklVQgZm">青年工作</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BWYMMwliWTgKa1ViUTZVNANnUzAGYgA3BTZSZlUxVmoBEgBPXEdXZQcWUBdeSVY2">日常动态</a></li></ul></li><li class="mainlevel" id="mainlevel_09"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BWYBPgphWTgEZQUyXjlXNlYyBGcGYgQzUWJTZwBhADYLGAFOCRIDMQYXVRJVQgVl">政策法规</a><ul id="sub_09"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VDdaZVswWThXNgUyAGcAYQdjVzRSNlBnUWIIPAVjDD8LGABPDBdVZwMSA0RUQ1Y2">政策法规</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BGdZZgphVDUBYAI1UjVWN1YyUjEJbVFmBzQIPFA2UGFXRFkWChFZawMSAEdVQgBg">信用体系建设</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UDMJNgxnUzILalBnVDNVNABkVzQFYQYxAzACNgBmDD5TQA9AABsDMVNCUxQCFVIy">企业社会责任</a></li></ul></li><li class="mainlevel" id="mainlevel_10"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VzRcYwBrAGELag84VzBRMFA0AGMIbFZhXm0IPFQ1DD5WRVkWABsAMgsaD0gCFQFh">分会园地</a><ul id="sub_10" style="overflow: hidden; height: 21.2216px; display: block; margin-top: 0px; margin-bottom: 0px; padding-top: 0px; padding-bottom: 0px;"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BGdaZQliWDlTMlRjVjEEZQVhBWZWMlRjVWYCNlY3ATIKGQpFARpSYAobAEcDFAdn">法律分会</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=AmFbZFswVzYLagQzXjlRMAJmBWYBZQYxUWIFMQRlAz9TQAFOChFSYAsaAEdVQgVl">设备分会</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UzAAP1swUTALagYxVzAMbQVhBGcDZwYxVGdVYVY8BDAAEwlGXEcFN1FAVBNWQQVl">国际产能合作</a></li></ul></li><li class="mainlevel" id="mainlevel_11"><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UzAJNgFqAmMKawA3UzQFZAVhCWoGYlNkUWJUYARvVWIHFA9ADxQDMQMSAEcEE1Ex">大事记</a></li></ul>
+			
+			    <!-- 	<div id="right_jiao"></div> -->
+			    </div>
+
+
+  <div class="menu">
+        
+ <ul><li><a class="hide" href="http://211.103.229.61/gxportal/File/module/1/culture.jsp">钢协文化&nbsp;&gt;</a><ul class="left"></ul></li><li><a class="hide" href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BGcAPw9kB2ZXNgUyUjVVNAxoAWIBZQM0VmUDMABjVmVXRFwTChFXZQARVxBQRwZm">钢协刊物&nbsp;&gt;</a><ul class="left"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UDMOMVswUDEHZlBnBWJSM1E1UDMDZ1ViUGMGNQJlDDxUR1kWCxAFN1FAUhUAFwdn">中国钢铁业</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=VDcINwBrVzZQMVdgA2QCY1E1VTZVMVtsBzQCMVE2DD0GFQFOW0ACMAQVUBdfSAJi">钢铁信息</a></li></ul></li><li><a class="hide" href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=AGMLNFkyUjMFZA84UjVXNlYyA2AFYVRjU2AFNlU2BDhRQgxDCRJQYlBBVBMDFFIy">钢铁知识&nbsp;&gt;</a><ul class="left"><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=B2RZZg9kA2IBYAI1VDMHZgBkCWpUMAcwXm0HNANkDT8DEAlGChFXZQMSBkFVQgRk">生产知识</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=C2haZVkyVjcGZwcwAmUFZAFlBGcFYVJlUGNVZlUyATJQQwtEWUJYaldGVxADFFEx">材料使用</a></li><li><a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=AGMKNQ1mUzIAYQA3UTYEZQRgBmVRNQM0X2xWZVA3Aj5RQloVDxRWZFBBVBNWQVU1">钢铁标准</a></li></ul></li><li><a class="hide" href="http://211.103.229.61/gxportal/File/module/0/contactus.html">联系我们&nbsp;&gt;</a></li><li><a class="hide" href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=BWYINw1mVzYGZwI1B2AFZFE1AmEFYQA3U2BWZFUzDT8DEA5BDxRUZgMSVRIDFFIy">下载专区&nbsp;&gt;</a></li></ul>
+  </div>
+    <table border="0" cellpadding="0" cellspacing="0" class="postion">
+      <tbody><tr>
+        <td class="postion_text">您当前所在的位置：
+        
+        -&gt;&nbsp;<a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=AWJdYlswAmMGZwE2UDcEZVYyA2ADZ1tsBDcJOVAyV2JRQgBPDRZQcgYXVxBUQwJj" style="color:#005AB5">中国钢铁工业协会</a>&nbsp;-&gt;&nbsp;<a href="http://211.103.229.61/gxportal/DispatchAction.do?efFormEname=ECTM40&amp;key=UDMKNQBrBWRTMgA3A2RSM1czAWJSNlJlUWIBNFUxAjQAEwpFDRZQYgUUUxQDFABg" style="color:#005AB5">通知公告</a>&nbsp;
+        </td>
+      </tr>
+    </tbody></table>
+    
+       <table width="827" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tbody><tr>
+        <td width="15" align="left"><img src="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/subpage_inftit_2left.gif" width="15" height="43"></td>
+        <td width="827" align="center" height="43" background="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/subpage_inftit_2mid.gif" class="subpage_inftitle_1">中国钢铁工业协会关于提名2020年度国家科学技术奖励项目的公示</td>
+        <td width="15" align="right"><img src="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/subpage_inftit_2right.gif" width="15" height="43"></td>
+      </tr>
+      <tr>
+        <td colspan="3" valign="top"><img src="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/subpage_inftit_2pic.gif" width="827" height="20"></td>
+      </tr>
+      <tr>
+        <td colspan="3" valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" class="subpage_inftitle_1_table">
+            <tbody><tr>
+              <td class="subpage_inftitle_1time">来源： &nbsp;&nbsp;关键字：<!--KEYWORD-->&nbsp;&nbsp; 日期：20200107&nbsp;&nbsp; 浏览<span class="subpage_inftitle_1time_red">&nbsp;94624</span>&nbsp;次</td>
+            </tr>
+            <tr>
+              <td height="20"></td>
+            </tr>
+            <tr>
+              <td padding:="" "10px"="">
+<table><tbody><tr><td align="center"><iframe id="mframe" src="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/1578364532108.html" frameborder="no" width="810" scrolling="no" onload="suitHeight()" height="2684"></iframe></td></tr></tbody></table><p><a style="font-size: 15px; color: blue" href="http://www.chinaisa.org.cn/gxportal/EC/DM/ECDM0104.jsp?filePath=\\192.168.10.202\file/AppFiles/gxportalUploadFiles/File/attach/1578364575270.rar">附件：中国钢铁工业协会提名2020年度国家科学技术奖励项目表.rar</a></p>              </td>
+            </tr>
+<tr><td align="center"><input type="button" value="评论" onclick="javascript:comment('0000000003048331','中国钢铁工业协会关于提名2020年度国家科学技术奖励项目的公示')"><script type="text/javascript">function comment(id,title){ title=encodeURI(title);window.open("/gxportal/DispatchAction.do?efFormEname=ECAF02&serviceName=ECAF02&methodName=query&articleId="+id+"&articleTitle="+title,"new","");}</script> <input type="button" value="关闭" onclick="javascript:page_close()"><script type="text/javascript">function page_close(){window.close();}</script></td></tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+    
+    <div id="btm"><div id="btm_logo">版权所有：中国钢铁工业协会 京ICP备15011807号-2&nbsp;&nbsp;  <br><div style="width:100%;margin:0px auto; padding:7px 0px 0px 0px;"> <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11040102700019" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="%E4%B8%AD%E5%9B%BD%E9%92%A2%E9%93%81%E5%B7%A5%E4%B8%9A%E5%8D%8F%E4%BC%9A%E5%85%B3%E4%BA%8E%E6%8F%90%E5%90%8D2020%E5%B9%B4%E5%BA%A6%E5%9B%BD%E5%AE%B6%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E5%A5%96%E5%8A%B1%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%85%AC%E7%A4%BA_files/batb.png" style="float:left;"><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">京公网安备 11040102700019号</p></a></div>  </div><div id="address"> 地址：北京市东四西大街46号&nbsp;&nbsp;邮政编码：100711&nbsp;&nbsp;&nbsp;联系电话：010-65133322-1304&nbsp; <br>技术支持：上海宝信软件股份有限公司&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;联系电话：010-65133322-1140<br> </div><div id="btm_right"></div></div>
+</div>
+
+<script type="text/javascript">
+	/*var iframe = document.getElementById('mframe');
+	if (iframe.attachEvent) {
+	    iframe.attachEvent("onload", function () {
+	        iframe.contentWindow.document.body.innerHTML = iframe.contentWindow.document.body.innerHTML.replace(/v:imagedata/g,"img");
+	    });
+	} else {
+	    iframe.onload = function () {
+	        iframe.contentWindow.document.body.innerHTML = iframe.contentWindow.document.body.innerHTML.replace(/v:imagedata/g,"img");
+	    };
+	}*/
+	$('#mframe').load(function(){
+		$(this).contents().find('body').html($(this).contents().find('body').html().replace(/<v:imagedata/g,"<img width='96%' ").replace(/v:imagedata>/g,"img>"));
+	});
+</script>
+
+</body></html>

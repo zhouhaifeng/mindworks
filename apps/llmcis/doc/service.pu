@@ -1,0 +1,7 @@
+@startuml
+actor search
+chargpt-web -> model api: 查询通用信息
+api -> 附加模型: 查询通过spider下载数据训练的模型
+es -> minio: 通过es服务搜索保存在minio中的文档摘要, 分析报告
+
+@enduml
