@@ -32,8 +32,8 @@
 namespace {
 
 using namespace mlir;
-namespace ttg = ::mlir::triton::cpu;
-namespace ttng = ::mlir::triton::nvidia_cpu;
+namespace ttc = ::mlir::triton::cpu;
+
 
 // TODO: use ConvertLayoutOp
 using CastOp = ::mlir::UnrealizedConversionCastOp;

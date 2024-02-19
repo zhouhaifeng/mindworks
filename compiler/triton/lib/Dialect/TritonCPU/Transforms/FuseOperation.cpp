@@ -1,3 +1,11 @@
+#include "triton/Dialect/TritonCPU/IR/Dialect.h"
+#include "triton/Dialect/TritonCPU/IR/Dialect.h"
+#include "triton/Dialect/TritonCPU/Transforms/Passes.h"
+#include <queue>
+
+#define GEN_PASS_CLASSES
+#include "triton/Dialect/TritonCPU/Transforms/Passes.h.inc"
+
 class FuseOperations : public mlir::RewritePattern {
 public:
   explicit FuseOperations(mlir::MLIRContext *context)
