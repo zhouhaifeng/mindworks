@@ -129,6 +129,15 @@ def optimize_ttgir(mod, num_stages, num_warps, num_ctas, arch,
     pm.run(mod)
     return mod
 
+#todo: fix me
+def optimize_ttcir(mod, num_stages, num_warps, num_ctas, arch):
+    return
+
+def ttir_to_ttcir(mod, num_warps, num_ctas, arch):
+    return
+
+def ttcir_to_llir(mod, extern_libs, arch, tma_infos):
+    return
 
 def _add_external_libs(mod, libs):
     for name, path in libs.items():
@@ -352,6 +361,9 @@ instance_descriptor = namedtuple("instance_descriptor", ["divisible_by_16", "equ
 def _is_cuda(arch):
     return isinstance(arch, int)
 
+#todo: add hip
+def _is_cpu(arch):
+    return not _is_cuda(arch)
 
 def get_architecture_descriptor(capability):
     try:
@@ -422,10 +434,11 @@ def add_cuda_stages(arch, extern_libs, stages):
 def compile(fn, **kwargs):
     # Get device type to decide which backend should be used
     device_type = kwargs.get("device_type", "cuda")
+    # todo: register the backend for cpu
     _device_backend = get_backend(device_type)
     capability = kwargs.get("cc", None)
 
-    if device_type in ["cuda", "hip"]:
+    if device_type in ["cuda", "hip", "cpu"]:
         arch = get_architecture_descriptor(capability)
     else:
         _device_backend = get_backend(device_type)
@@ -433,6 +446,7 @@ def compile(fn, **kwargs):
         arch = _device_backend.get_architecture_descriptor(**kwargs)
 
     is_cuda = device_type == "cuda" and _is_cuda(arch)
+    is_cpu = device_type == "cpu" and _is_cpu(arch)
     is_hip = device_type in ["cuda", "hip"] and not is_cuda
     context = ir.context()
     constants = kwargs.get("constants", dict())
@@ -466,12 +480,20 @@ def compile(fn, **kwargs):
                       lambda src: optimize_ttir(ast_to_ttir(src, signature, configs[0], constants, debug=debug, arch=arch), arch))
     stages["ttgir"] = (lambda path: parse_mlir_module(path, context),
                        lambda src: optimize_ttgir(ttir_to_ttgir(src, num_warps, num_ctas, arch), num_stages, num_warps, num_ctas, arch, cluster_info, enable_warp_specialization, enable_persistent, optimize_epilogue))
+    stages["ttcir"] = (lambda path: parse_mlir_module(path, context),
+                       lambda src: optimize_ttcir(ttir_to_ttcir(src, num_warps, num_ctas, arch), num_stages, num_warps, num_ctas, arch, cluster_info, enable_warp_specialization, enable_persistent, optimize_epilogue))
+    #fixme: add ttcir_to_llir
     stages["llir"] = (lambda path: Path(path).read_text(),
                       lambda src: ttgir_to_llir(src, extern_libs, arch, tma_infos))
     if is_cuda:
         add_cuda_stages(arch, extern_libs, stages)
     elif is_hip:
         add_rocm_stages(arch, extern_libs, stages)
+    else is_cpu:
+        arch["num_warps"] = num_warps
+        arch["num_stages"] = num_stages
+        arch["num_ctas"] = num_ctas
+        #add_rocm_stages(arch, extern_libs, stages)
     else:
         # pass the user's configuration to the backend device.
         arch["num_warps"] = num_warps

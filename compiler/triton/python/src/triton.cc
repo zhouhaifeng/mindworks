@@ -2005,7 +2005,43 @@ void init_triton_translation(py::module &m) {
         return str;
       },
       ret::take_ownership);
-  //llvmir -> amx
+  //llvmir -> vector, AVX
+  m.def(
+      "translate_llvmir_to_vector",
+      [](const std::string llvmIR, std::string gfx_arch, std::string gfx_triple,
+         std::string gfx_features) -> std::tuple<std::string, std::string> {
+        // create LLVM module from C++
+        llvm::LLVMContext context;
+        std::unique_ptr<llvm::MemoryBuffer> buffer =
+            llvm::MemoryBuffer::getMemBuffer(llvmIR.c_str());
+        llvm::SMDiagnostic error;
+        std::unique_ptr<llvm::Module> module =
+            llvm::parseIR(buffer->getMemBufferRef(), error, context);
+        // translate module to AMX
+        auto amxCode = triton::translateLLVMIRToVector(
+            *module, gfx_arch, gfx_triple, gfx_features);
+        return hsacoCode;
+      },
+      ret::take_ownership);
+  //llvmir -> x86vector, AVX512
+  m.def(
+      "translate_llvmir_to_x86vector",
+      [](const std::string llvmIR, std::string gfx_arch, std::string gfx_triple,
+         std::string gfx_features) -> std::tuple<std::string, std::string> {
+        // create LLVM module from C++
+        llvm::LLVMContext context;
+        std::unique_ptr<llvm::MemoryBuffer> buffer =
+            llvm::MemoryBuffer::getMemBuffer(llvmIR.c_str());
+        llvm::SMDiagnostic error;
+        std::unique_ptr<llvm::Module> module =
+            llvm::parseIR(buffer->getMemBufferRef(), error, context);
+        // translate module to AMX
+        auto amxCode = triton::translateLLVMIRTox86Vector(
+            *module, gfx_arch, gfx_triple, gfx_features);
+        return hsacoCode;
+      },
+      ret::take_ownership);
+  //llvmir -> amx, AMX
   m.def(
       "translate_llvmir_to_amx",
       [](const std::string llvmIR, std::string gfx_arch, std::string gfx_triple,
