@@ -15,6 +15,7 @@ from packaging import version as pkg_version
 try:
     import triton  # noqa: F401
     HAS_TRITON = True
+    HAS_FKA = True #FKA is enabled
 except ImportError:
     HAS_TRITON = False
 

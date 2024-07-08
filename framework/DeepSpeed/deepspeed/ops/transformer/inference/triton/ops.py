@@ -129,3 +129,31 @@ def qkv_gemm_func(
     qkv_out = matmul_ext.matmul(qkv_input, weight, bias=(bias if add_bias else None), activation="", use_triton=True)
 
     return qkv_out, qkv_input
+
+def fka_gemm_func(
+    input,
+    weight,
+    q_scale,
+    bias,
+    gamma,
+    beta,
+    epsilon,
+    add_bias,
+    q_int8,
+    transposed_mode=False,
+    use_triton_ln=True,
+):
+
+    assert not transposed_mode
+    # residual add and layerNorm after attention
+    if use_triton_ln:
+        fka_input = layer_norm(input, gamma, beta, epsilon)
+    else:
+        global inference_module
+        if inference_module is None:
+            inference_module = InferenceBuilder().load()
+        fka_input = inference_module.layer_norm(input, gamma, beta, epsilon)
+
+    fka_out = matmul_ext.matmul(fka_input, weight, bias=(bias if add_bias else None), activation="", use_triton=True)
+
+    return fka_out, fka_input

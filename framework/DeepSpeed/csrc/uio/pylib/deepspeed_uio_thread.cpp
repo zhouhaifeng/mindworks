@@ -7,7 +7,7 @@
 Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 */
 
-#include "deepspeed_iouring_thread.h"
+#include "deepspeed_uio_thread.h"
 
 using namespace std;
 
@@ -35,17 +35,17 @@ void io_op_desc_t::fini()
     if (_read_op && _buffer.is_cuda()) { _buffer.copy_(_cpu_buffer.to(torch::kCUDA)); }
 }
 
-deepspeed_iouring_thread_t::deepspeed_iouring_thread_t(const int tid, deepspeed_iouring_config_t& iouring_config)
+deepspeed_uio_thread_t::deepspeed_uio_thread_t(const int tid, deepspeed_uio_config_t& uio_config)
     : _tid(tid),
-      _iouring_config(iouring_config),
-      _iouring_ctxt(new iouring_context(iouring_config._block_size, iouring_config._queue_depth)),
+      _uio_config(uio_config),
+      _uio_ctxt(new uio_context(uio_config._block_size, uio_config._queue_depth)),
       _time_to_exit(false)
 {
 }
 
-deepspeed_iouring_thread_t::~deepspeed_iouring_thread_t() {}
+deepspeed_uio_thread_t::~deepspeed_uio_thread_t() {}
 
-void deepspeed_iouring_thread_t::run()
+void deepspeed_uio_thread_t::run()
 {
     while (true) {
         std::shared_ptr<struct io_op_desc_t> next_io_op = nullptr;
@@ -66,12 +66,12 @@ void deepspeed_iouring_thread_t::run()
             std::unique_ptr<io_xfer_ctxt> xfer_ctxt(new io_xfer_ctxt(
                 next_io_op->_fd, base_offset, next_io_op->_num_bytes, next_io_op->data_ptr()));
 
-            if (_iouring_config._overlap_events) {
-                do_iouring_operation_overlap(
-                    next_io_op->_read_op, _iouring_ctxt, xfer_ctxt, &_iouring_config, nullptr);
+            if (_uio_config._overlap_events) {
+                do_uio_operation_overlap(
+                    next_io_op->_read_op, _uio_ctxt, xfer_ctxt, &_uio_config, nullptr);
             } else {
-                do_iouring_operation_sequential(
-                    next_io_op->_read_op, _iouring_ctxt, xfer_ctxt, &_iouring_config, nullptr);
+                do_uio_operation_sequential(
+                    next_io_op->_read_op, _uio_ctxt, xfer_ctxt, &_uio_config, nullptr);
             }
 
             {

@@ -21,6 +21,7 @@ def pre_handle(args, tid, read_op):
     file = args.read_file if read_op else f'{args.write_file}.{tid}'
 
     io_parallel = args.io_parallel if args.io_parallel else 1
+    
     handle = IOUringBuilder().load().iouring_handle(args.block_size, args.queue_depth, args.single_submit,
                                                 args.overlap_events, io_parallel)
     task_log(tid, f'Created deepspeed iouring handle')

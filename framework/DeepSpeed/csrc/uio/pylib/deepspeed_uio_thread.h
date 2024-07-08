@@ -38,11 +38,11 @@ struct thread_sync_t {
     std::condition_variable _cond_var;
 };
 
-struct deepspeed_iouring_thread_t {
+struct deepspeed_uio_thread_t {
     const int _tid;
-    deepspeed_iouring_config_t& _iouring_config;
+    deepspeed_uio_config_t& _uio_config;
 
-    std::unique_ptr<struct iouring_context> _iouring_ctxt;
+    std::unique_ptr<struct uio_context> _uio_ctxt;
     std::queue<std::shared_ptr<struct io_op_desc_t>> _work_queue;
     std::queue<std::shared_ptr<struct io_op_desc_t>> _complete_queue;
 
@@ -51,9 +51,9 @@ struct deepspeed_iouring_thread_t {
     struct thread_sync_t _work_sync;
     struct thread_sync_t _complete_sync;
 
-    deepspeed_iouring_thread_t(const int tid, deepspeed_iouring_config_t& iouring_config);
+    deepspeed_uio_thread_t(const int tid, deepspeed_uio_config_t& uio_config);
 
-    ~deepspeed_iouring_thread_t();
+    ~deepspeed_uio_thread_t();
 
     void run();
 };

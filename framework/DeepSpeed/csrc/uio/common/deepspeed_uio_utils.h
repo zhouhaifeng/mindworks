@@ -21,15 +21,13 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <deepspeed_iouring_types.h>
+#include <deepspeed_uio_types.h>
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <liburing/io_service.hpp>
 
 struct io_xfer_ctxt {
     const int _fd;

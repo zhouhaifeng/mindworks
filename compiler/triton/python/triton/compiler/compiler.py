@@ -714,7 +714,10 @@ class CompiledKernel:
         if self.shared > max_shared:
             raise OutOfResources(self.shared, max_shared, "shared memory")
 
-        mod, func, n_regs, n_spills = fn_load_binary(self.metadata["name"], self.asm[bin_path], self.shared, device)
+        if self.device_type in ["cuda", "hip"]:
+            mod, func, n_regs, n_spills = fn_load_binary(self.metadata["name"], self.asm[bin_path], self.shared, device)
+        elif self.device_type in ["cpu"]:
+            mod, func, n_regs, n_spills = fn_load_binary(self.metadata["name"], self.asm["llir"], self.shared, device)
 
         self.n_spills = n_spills
         self.n_regs = n_regs

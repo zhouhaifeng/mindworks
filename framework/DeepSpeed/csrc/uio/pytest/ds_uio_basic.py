@@ -12,7 +12,7 @@ import time
 from multiprocessing import Pool, Barrier
 from test_ds_iouring_utils import report_results, task_log, task_barrier
 from deepspeed.accelerator import get_accelerator
-from deepspeed.ops.op_builder import IOUringBuilder
+from deepspeed.ops.op_builder import UIOBuilder
 
 
 def pre_basic(args, tid, read_op):
@@ -55,8 +55,8 @@ def post_basic(pool_params):
 def main_basic_read(pool_params):
     args, tid, ctxt = pool_params
     start_time = time.time()
-    AsyncIOBuilder().load().iouring_read(ctxt['buffer'], ctxt['file'], args.block_size, args.queue_depth,
-                                     args.single_submit, args.overlap_events, args.validate)
+    #confirm buffer, block_size, qeune_depth 
+    UIOBuilder().load().uio_read(ctxt['buffer'], ctxt['file'], ctxt['block_size'], ctxt['queue_depth'])
     end_time = time.time()
     ctxt['elapsed_sec'] += end_time - start_time
 
@@ -66,8 +66,7 @@ def main_basic_read(pool_params):
 def main_basic_write(pool_params):
     args, tid, ctxt = pool_params
     start_time = time.time()
-    AsyncIOBuilder().load().iouring_write(ctxt['buffer'], ctxt['file'], args.block_size, args.queue_depth,
-                                      args.single_submit, args.overlap_events, args.validate)
+    UIOBuilder().load().uio_write(ctxt['buffer'], ctxt['block_size'], ctxt['queue_depth'])
     end_time = time.time()
     ctxt['elapsed_sec'] += end_time - start_time
 
@@ -122,7 +121,6 @@ def _iouring_handle_tasklet(pool_params):
 def _init_tasklet(b):
     global iouring_barrier
     iouring_barrier = b
-
 
 def iouring_basic_multiprocessing(args, read_op):
     b = Barrier(args.threads)

@@ -11,7 +11,7 @@ import argparse
 import multiprocessing as mp
 from ds_iouring_basic import iouring_basic_multiprocessing
 from ds_iouring_handle import iouring_handle_multiprocessing
-from test_ds_aio_utils import refine_args
+from test_ds_iouring_utils import refine_args
 
 
 def parse_arguments():

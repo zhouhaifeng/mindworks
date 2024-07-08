@@ -36,13 +36,13 @@ def TritonCPU_Dialect : Dialect {
     static int getNumCTAs(ModuleOp mod) {
       if(!mod->hasAttr("triton_cpu.num-ctas"))
         llvm::report_fatal_error(
-            "TritonGPU module should contain a triton_cpu.num-ctas attribute");
+            "TritonCPU module should contain a triton_cpu.num-ctas attribute");
       return mod->getAttr("triton_cpu.num-ctas").cast<IntegerAttr>().getInt();
     }
     static int getComputeCapability(ModuleOp mod) {
       if(!mod->hasAttr("triton_cpu.compute-capability"))
         llvm::report_fatal_error(
-            "TritonGPU module should contain a triton_gpu.compute-capability attribute");
+            "TritonCPU module should contain a triton_gpu.compute-capability attribute");
       return mod->getAttrOfType<IntegerAttr>("triton_cpu.compute-capability").getInt();
     }
     void registerTypes();

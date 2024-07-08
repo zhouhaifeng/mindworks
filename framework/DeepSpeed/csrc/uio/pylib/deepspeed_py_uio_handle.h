@@ -9,28 +9,28 @@ Functionality for swapping optimizer tensors to/from (NVMe) storage devices.
 
 #include <condition_variable>
 #include <memory>
-#include "deepspeed_iouring_thread.h"
+#include "deepspeed_uio_thread.h"
 #include "deepspeed_pin_tensor.h"
 
-struct deepspeed_iouring_handle_t {
-    std::unique_ptr<struct iouring_context> _iouring_ctxt;
+struct deepspeed_uio_handle_t {
+    std::unique_ptr<struct uio_context> _uio_ctxt;
     const bool _single_submit;
     const bool _overlap_events;
     const int _num_threads;
-    deepspeed_iouring_config_t _iouring_config;
+    deepspeed_uio_config_t _uio_config;
 
-    std::vector<std::shared_ptr<struct deepspeed_iouring_thread_t>> _thread_contexts;
+    std::vector<std::shared_ptr<struct deepspeed_uio_thread_t>> _thread_contexts;
     std::vector<std::thread> _threads;
     int _num_pending_ops;
     std::unique_ptr<struct deepspeed_pin_tensor_t> _pinned_tensor_mgr;
 
-    deepspeed_iouring_handle_t(const int block_size,
+    deepspeed_uio_handle_t(const int block_size,
                            const int queue_depth,
                            const bool single_submit,
                            const bool overlap_events,
                            const int num_threads);
 
-    ~deepspeed_iouring_handle_t();
+    ~deepspeed_uio_handle_t();
 
     const int get_block_size() const;
     const int get_queue_depth() const;
@@ -69,9 +69,9 @@ struct deepspeed_iouring_handle_t {
 
     void _stop_threads();
 
-    void _schedule_iouring_work(std::shared_ptr<struct io_op_desc_t> scheduled_op);
+    void _schedule_uio_work(std::shared_ptr<struct io_op_desc_t> scheduled_op);
 
-    std::shared_ptr<struct io_op_desc_t> _wait_for_iouring_work();
+    std::shared_ptr<struct io_op_desc_t> _wait_for_uio_work();
 
-    bool _is_valid_parallel_iouring_op(const bool read_op, const long long int num_bytes);
+    bool _is_valid_parallel_uio_op(const bool read_op, const long long int num_bytes);
 };

@@ -92,6 +92,7 @@ public:
     if (broadcastCond != condSelect)
       return mlir::failure();
 
+    //replace select with load
     rewriter.replaceOpWithNewOp<triton::LoadOp>(
         op, loadOp.getPtr(), loadOp.getMask(), falseValue,
         loadOp.getBoundaryCheck(), loadOp.getPadding(), loadOp.getCache(),

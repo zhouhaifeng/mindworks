@@ -1,8 +1,0 @@
-@startuml
-actor flink
-minio -> flink: 从minio获取文档
-flink -> flink: 调用api,生成文档摘要
-flink -> minio: 保存文档摘要
-flink -> flink: 调用api,生成文档分析报告
-flink -> flink: 保存文档分析报告
-@enduml

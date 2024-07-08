@@ -9,7 +9,7 @@ import subprocess
 from .builder import OpBuilder
 
 
-class IOUringBuilder(OpBuilder):
+class UIOBuilder(OpBuilder):
     BUILD_VAR = "DS_BUILD_IOURING"
     NAME = "io_uring"
 

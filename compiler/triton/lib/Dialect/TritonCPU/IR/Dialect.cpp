@@ -127,6 +127,8 @@ SmallVector<unsigned> getThreadsPerWarp(Attribute layout) {
       return {8, 4};
     */
   }
+
+  //todo: slice is not implemented
   if (auto sliceLayout = layout.dyn_cast<SliceEncodingAttr>()) {
     auto parent = sliceLayout.getParent();
     auto parentThreadsPerWarp = getThreadsPerWarp(parent);

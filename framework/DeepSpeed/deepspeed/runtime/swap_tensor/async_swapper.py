@@ -16,8 +16,9 @@ INVALID_BUFFER_INDEX = -1
 ASYNC_SWAPPER_WAIT_TIMER = 'async_swap_gradient_wait'
 
 class IOType(Enum):
-    aio = 1
-    uio = 2
+    aio   = 1
+    uio   = 2
+    roce  = 3
 
 class AsyncTensorSwapper(object):
 
@@ -150,10 +151,12 @@ class AsyncTensorSwapper(object):
         assert len(self.swapping_buffer_index) > 0
 
         self._start_timer(ASYNC_SWAPPER_WAIT_TIMER)
+        #modified by zhf begin
         if self.iotype == IOType.aio:
             assert self.aio_handle.wait() == self.num_pending_swaps
         if self.iotype == IOType.uio:
             assert self.uio_handle.wait() == self.num_pending_swaps
+        #modified by zhf end
         self._stop_timer(ASYNC_SWAPPER_WAIT_TIMER)
         self.timer_names.add(ASYNC_SWAPPER_WAIT_TIMER)
 
